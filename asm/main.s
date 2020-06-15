@@ -11,16 +11,17 @@
 	.importzp	tmp1, tmp2, tmp3, tmp4, ptr1, ptr2, ptr3, ptr4
 	.macpack	longbranch
 	.forceimport	__STARTUP__
+	.import		_rand
+	.import		__randomize
 	.import		_clrscr
 	.import		_gotoxy
+	.import		_cputcxy
 	.import		_cprintf
 	.import		_cgetc
 	.import		_cursor
 	.import		_textcolor
 	.import		_bgcolor
 	.import		_bordercolor
-	.import		_chline
-	.import		_cvline
 	.import		_screensize
 	.import		_strlen
 	.export		_main
@@ -40,6 +41,14 @@ L0017	:=	L0020+0
 _xdim:
 	.res	1,$00
 _ydim:
+	.res	1,$00
+_i:
+	.res	1,$00
+_isGameOver:
+	.res	1,$00
+_linesCleared:
+	.res	2,$00
+_curTet:
 	.res	1,$00
 
 ; ---------------------------------------------------------------
@@ -113,17 +122,122 @@ _ydim:
 .segment	"CODE"
 
 	jsr     _clrscr
-	lda     #$04
+	lda     #$01
+	sta     _i
+	jmp     L006C
+L006B:	lda     _i
+	clc
+	adc     #$05
 	jsr     pusha
 	lda     #$02
-	jsr     _gotoxy
-	lda     #$0A
-	jsr     _chline
-	lda     #$03
 	jsr     pusha
-	jsr     _gotoxy
-	lda     #$14
-	jmp     _cvline
+	lda     #$EF
+	jsr     _cputcxy
+	inc     _i
+L006C:	lda     _i
+	cmp     #$0B
+	bcc     L006B
+	lda     #$01
+	sta     _i
+	jmp     L006E
+L006D:	lda     _i
+	clc
+	adc     #$05
+	jsr     pusha
+	lda     #$17
+	jsr     pusha
+	lda     #$F7
+	jsr     _cputcxy
+	inc     _i
+L006E:	lda     _i
+	cmp     #$0B
+	bcc     L006D
+	lda     #$01
+	sta     _i
+	jmp     L006F
+L003D:	lda     #$05
+	jsr     pusha
+	lda     _i
+	clc
+	adc     #$02
+	jsr     pusha
+	lda     #$EA
+	jsr     _cputcxy
+	inc     _i
+L006F:	lda     _i
+	cmp     #$15
+	bcc     L003D
+	lda     #$01
+	sta     _i
+	jmp     L0070
+L0048:	lda     #$10
+	jsr     pusha
+	lda     _i
+	clc
+	adc     #$02
+	jsr     pusha
+	lda     #$F4
+	jsr     _cputcxy
+	inc     _i
+L0070:	lda     _i
+	cmp     #$15
+	bcc     L0048
+	rts
+
+.endproc
+
+; ---------------------------------------------------------------
+; void __near__ pickTet (void)
+; ---------------------------------------------------------------
+
+.segment	"CODE"
+
+.proc	_pickTet: near
+
+.segment	"CODE"
+
+	jsr     __randomize
+	jsr     _rand
+	jsr     pushax
+	ldx     #$00
+	lda     #$07
+	jsr     tosmoda0
+	sta     _curTet
+	rts
+
+.endproc
+
+; ---------------------------------------------------------------
+; void __near__ drawTet (void)
+; ---------------------------------------------------------------
+
+.segment	"CODE"
+
+.proc	_drawTet: near
+
+.segment	"CODE"
+
+	rts
+
+.endproc
+
+; ---------------------------------------------------------------
+; void __near__ game_loop (void)
+; ---------------------------------------------------------------
+
+.segment	"CODE"
+
+.proc	_game_loop: near
+
+.segment	"CODE"
+
+	jmp     L0059
+L0057:	jsr     _pickTet
+	jsr     _drawTet
+L0059:	lda     _isGameOver
+	cmp     #$01
+	bne     L0057
+	rts
 
 .endproc
 
@@ -146,10 +260,11 @@ _ydim:
 	ldx     #>(_ydim)
 	jsr     _screensize
 	jsr     _draw_title
-L0036:	jsr     _cgetc
+L0064:	jsr     _cgetc
 	cmp     #$58
-	bne     L0036
+	bne     L0064
 	jsr     _draw_game
+	jsr     _game_loop
 	ldx     #$00
 	txa
 	rts

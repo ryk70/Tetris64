@@ -18,6 +18,10 @@
 // Vars
 static unsigned char xdim;
 static unsigned char ydim;
+static unsigned char i;
+static unsigned char isGameOver;
+static unsigned int linesCleared;
+static unsigned char curTet;
 
 
 // Data
@@ -42,10 +46,53 @@ static void draw_title(void) {
 
 static void draw_game(void) {
         clrscr(); // This sets cursor back to top left (0,0)
-        gotoxy(4, 2);
-        chline(10);
-        gotoxy(3, 3);
-        cvline(20);
+        i = 1;
+
+        // 239: bottom bar
+        // 234: right bar
+        // 244: left bar
+        // 247: top bar
+        
+        // Draw top
+        while (i <= 10) {
+                cputcxy(5 + i, 2, 239);
+                ++i; // this optimizes for the cc65 compiler
+        }
+
+        // Draw bottom
+        i = 1;
+        while (i <= 10) {
+                cputcxy(5 + i, 23, 247);
+                ++i;
+        }
+
+        // Draw left
+        i = 1;
+        while (i <= 20) {
+                cputcxy(5, 2 + i, 234);
+                ++i;
+        }
+
+        // Draw right
+        i = 1;
+        while (i <= 20) {
+                cputcxy(16, 2 + i, 244);
+                ++i;
+        }
+}
+
+static void pickTet() {
+        _randomize();
+        curTet = rand() % 7;
+}
+
+static void drawTet() {}
+
+static void game_loop() {
+        while (isGameOver != 1) {
+                pickTet();
+                drawTet();
+        }
 }
 
 int main (void) {
@@ -56,20 +103,16 @@ int main (void) {
          */
         // tgi_install(tgi_static_stddrv);
         // tgi_init();
-                
-        
-
         cursor(0); // Turn off cursor when checking for input
         screensize(&xdim, &ydim); // Actually doesn't return anything, seems to deref and assign screesize to xdim and ydim
 
-
         draw_title();
-
         while (cgetc() != 'x') {
                 ; // Empty loop to check for X key trigger
         }
 
         draw_game();
+        game_loop();
 
         
         // tgi_uninstall();

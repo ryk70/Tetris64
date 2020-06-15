@@ -1,8 +1,9 @@
 #include <stdlib.h>
-#include <tgi.h>
+//include <tgi.h>
 #include <cbm.h>
 #include <cc65.h>
 #include <conio.h>
+#include <string.h>;
 
 #  define BUFFER                0x0400
 #  define SCREEN1               0xE000
@@ -12,31 +13,66 @@
 #  define outb(addr,val)        (*(addr) = (val))
 #  define inb(addr)             (*(addr))
 
-static unsigned maxX;
-static unsigned maxY;
-unsigned X;
-static const unsigned char Palette[2] = { TGI_COLOR_WHITE, TGI_COLOR_BLACK };
+
+
+// Vars
+static unsigned char xdim;
+static unsigned char ydim;
+
+
+// Data
+static const char Title[] = "TETRIS64";
+static const char Inst[] = "PRESS X TO PLAY";
+
+
+// Code
+
+static void draw_title(void) {
+        clrscr();
+        bgcolor(COLOR_BLACK);
+        bordercolor(COLOR_BLACK);
+        textcolor(COLOR_WHITE);
+
+        gotoxy((xdim - strlen(Title)) / 2, (ydim / 2) - 1);
+        cprintf("%s", Title);
+
+        gotoxy((xdim - strlen(Inst)) / 2, ydim/2);
+        cprintf("%s", Inst);
+}
+
+static void draw_game(void) {
+        clrscr(); // This sets cursor back to top left (0,0)
+        gotoxy(4, 2);
+        chline(10);
+        gotoxy(3, 3);
+        cvline(20);
+}
 
 int main (void) {
-        tgi_install(tgi_static_stddrv);
-        tgi_init();
 
-        maxX = tgi_getmaxx();
-        maxY = tgi_getmaxy();
-
+        /**
+         * This was originally here to load and initialize the tgi interface (which is in tgi.h),
+         * but I found that conio.h was much faster and suited to text-based Tetris.
+         */
+        // tgi_install(tgi_static_stddrv);
+        // tgi_init();
+                
         
-        tgi_setpalette(Palette);
-        tgi_setcolor(TGI_COLOR_RED);
-        tgi_clear();
 
-        for (X = 0; X <= maxY; X += 10) {
-                tgi_line (0, 0, maxY, X);
-                tgi_line (0, 0, X, maxY);
-                tgi_line (maxY, maxY, 0, maxY-X);
-                tgi_line (maxY, maxY, maxY-X, 0);
+        cursor(0); // Turn off cursor when checking for input
+        screensize(&xdim, &ydim); // Actually doesn't return anything, seems to deref and assign screesize to xdim and ydim
+
+
+        draw_title();
+
+        while (cgetc() != 'x') {
+                ; // Empty loop to check for X key trigger
         }
 
-        tgi_uninstall();
+        draw_game();
+
+        
+        // tgi_uninstall();
 
         return EXIT_SUCCESS;
 }

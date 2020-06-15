@@ -11,33 +11,121 @@
 	.importzp	tmp1, tmp2, tmp3, tmp4, ptr1, ptr2, ptr3, ptr4
 	.macpack	longbranch
 	.forceimport	__STARTUP__
-	.import		_tgi_static_stddrv
-	.import		_tgi_install
-	.import		_tgi_uninstall
-	.import		_tgi_init
-	.import		_tgi_clear
-	.import		_tgi_setcolor
-	.import		_tgi_setpalette
-	.import		_tgi_getmaxx
-	.import		_tgi_getmaxy
-	.import		_tgi_line
-	.export		_X
+	.import		_clrscr
+	.import		_gotoxy
+	.import		_cprintf
+	.import		_cgetc
+	.import		_cursor
+	.import		_textcolor
+	.import		_bgcolor
+	.import		_bordercolor
+	.import		_chline
+	.import		_cvline
+	.import		_screensize
+	.import		_strlen
 	.export		_main
 
 .segment	"RODATA"
 
-_Palette:
-	.byte	$01
-	.byte	$00
+_Title:
+	.byte	$D4,$C5,$D4,$D2,$C9,$D3,$36,$34,$00
+_Inst:
+	.byte	$D0,$D2,$C5,$D3,$D3,$20,$D8,$20,$D4,$CF,$20,$D0,$CC,$C1,$D9,$00
+L0020:
+	.byte	$25,$53,$00
+L0017	:=	L0020+0
 
 .segment	"BSS"
 
-_maxX:
-	.res	2,$00
-_maxY:
-	.res	2,$00
-_X:
-	.res	2,$00
+_xdim:
+	.res	1,$00
+_ydim:
+	.res	1,$00
+
+; ---------------------------------------------------------------
+; void __near__ draw_title (void)
+; ---------------------------------------------------------------
+
+.segment	"CODE"
+
+.proc	_draw_title: near
+
+.segment	"CODE"
+
+	jsr     _clrscr
+	lda     #$00
+	jsr     _bgcolor
+	lda     #$00
+	jsr     _bordercolor
+	lda     #$01
+	jsr     _textcolor
+	lda     _xdim
+	jsr     pusha0
+	lda     #<(_Title)
+	ldx     #>(_Title)
+	jsr     _strlen
+	jsr     tossubax
+	jsr     shrax1
+	jsr     pusha
+	lda     _ydim
+	lsr     a
+	sec
+	sbc     #$01
+	jsr     _gotoxy
+	lda     #<(L0017)
+	ldx     #>(L0017)
+	jsr     pushax
+	lda     #<(_Title)
+	ldx     #>(_Title)
+	jsr     pushax
+	ldy     #$04
+	jsr     _cprintf
+	lda     _xdim
+	jsr     pusha0
+	lda     #<(_Inst)
+	ldx     #>(_Inst)
+	jsr     _strlen
+	jsr     tossubax
+	jsr     shrax1
+	jsr     pusha
+	lda     _ydim
+	lsr     a
+	jsr     _gotoxy
+	lda     #<(L0020)
+	ldx     #>(L0020)
+	jsr     pushax
+	lda     #<(_Inst)
+	ldx     #>(_Inst)
+	jsr     pushax
+	ldy     #$04
+	jmp     _cprintf
+
+.endproc
+
+; ---------------------------------------------------------------
+; void __near__ draw_game (void)
+; ---------------------------------------------------------------
+
+.segment	"CODE"
+
+.proc	_draw_game: near
+
+.segment	"CODE"
+
+	jsr     _clrscr
+	lda     #$04
+	jsr     pusha
+	lda     #$02
+	jsr     _gotoxy
+	lda     #$0A
+	jsr     _chline
+	lda     #$03
+	jsr     pusha
+	jsr     _gotoxy
+	lda     #$14
+	jmp     _cvline
+
+.endproc
 
 ; ---------------------------------------------------------------
 ; int __near__ main (void)
@@ -49,92 +137,19 @@ _X:
 
 .segment	"CODE"
 
-	lda     #<(_tgi_static_stddrv)
-	ldx     #>(_tgi_static_stddrv)
-	jsr     _tgi_install
-	jsr     _tgi_init
-	jsr     _tgi_getmaxx
-	sta     _maxX
-	stx     _maxX+1
-	jsr     _tgi_getmaxy
-	sta     _maxY
-	stx     _maxY+1
-	lda     #<(_Palette)
-	ldx     #>(_Palette)
-	jsr     _tgi_setpalette
-	lda     #$02
-	jsr     _tgi_setcolor
-	jsr     _tgi_clear
 	lda     #$00
-	sta     _X
-	sta     _X+1
-L0016:	lda     _X
-	sec
-	sbc     _maxY
-	sta     tmp1
-	lda     _X+1
-	sbc     _maxY+1
-	ora     tmp1
-	bcc     L0019
-	jne     L0017
-L0019:	jsr     push0
-	jsr     push0
-	lda     _maxY
-	ldx     _maxY+1
+	jsr     _cursor
+	lda     #<(_xdim)
+	ldx     #>(_xdim)
 	jsr     pushax
-	lda     _X
-	ldx     _X+1
-	jsr     _tgi_line
-	jsr     push0
-	jsr     push0
-	lda     _X
-	ldx     _X+1
-	jsr     pushax
-	lda     _maxY
-	ldx     _maxY+1
-	jsr     _tgi_line
-	lda     _maxY
-	ldx     _maxY+1
-	jsr     pushax
-	lda     _maxY
-	ldx     _maxY+1
-	jsr     pushax
-	jsr     push0
-	lda     _maxY
-	sec
-	sbc     _X
-	pha
-	lda     _maxY+1
-	sbc     _X+1
-	tax
-	pla
-	jsr     _tgi_line
-	lda     _maxY
-	ldx     _maxY+1
-	jsr     pushax
-	lda     _maxY
-	ldx     _maxY+1
-	jsr     pushax
-	lda     _maxY
-	sec
-	sbc     _X
-	pha
-	lda     _maxY+1
-	sbc     _X+1
-	tax
-	pla
-	jsr     pushax
-	ldx     #$00
-	txa
-	jsr     _tgi_line
-	lda     #$0A
-	clc
-	adc     _X
-	sta     _X
-	jcc     L0016
-	inc     _X+1
-	jmp     L0016
-L0017:	jsr     _tgi_uninstall
+	lda     #<(_ydim)
+	ldx     #>(_ydim)
+	jsr     _screensize
+	jsr     _draw_title
+L0036:	jsr     _cgetc
+	cmp     #$58
+	bne     L0036
+	jsr     _draw_game
 	ldx     #$00
 	txa
 	rts

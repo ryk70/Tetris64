@@ -18,13 +18,26 @@
 	.import		_cputcxy
 	.import		_cprintf
 	.import		_cgetc
+	.import		_cpeekc
 	.import		_cursor
 	.import		_textcolor
 	.import		_bgcolor
 	.import		_bordercolor
+	.import		_cclearxy
 	.import		_screensize
 	.import		_strlen
 	.export		_main
+
+.segment	"DATA"
+
+_i:
+	.byte	$00
+_j:
+	.byte	$00
+_isPlaced:
+	.byte	$00
+_blockTile:
+	.byte	$A9
 
 .segment	"RODATA"
 
@@ -32,9 +45,9 @@ _Title:
 	.byte	$D4,$C5,$D4,$D2,$C9,$D3,$36,$34,$00
 _Inst:
 	.byte	$D0,$D2,$C5,$D3,$D3,$20,$D8,$20,$D4,$CF,$20,$D0,$CC,$C1,$D9,$00
-L0022:
+L0026:
 	.byte	$25,$53,$00
-L0019	:=	L0022+0
+L001D	:=	L0026+0
 
 .segment	"BSS"
 
@@ -42,21 +55,23 @@ _xdim:
 	.res	1,$00
 _ydim:
 	.res	1,$00
-_i:
-	.res	1,$00
 _isGameOver:
 	.res	1,$00
-_linesCleared:
-	.res	2,$00
 _curTet:
 	.res	1,$00
+_curPos:
+	.res	8,$00
+_linesCleared:
+	.res	2,$00
 _xTet:
 	.res	1,$00
 _yTet:
 	.res	1,$00
-_isPlaced:
+_curColor:
 	.res	1,$00
 _initPlacement:
+	.res	1,$00
+_rotState:
 	.res	1,$00
 
 ; ---------------------------------------------------------------
@@ -89,8 +104,8 @@ _initPlacement:
 	sec
 	sbc     #$01
 	jsr     _gotoxy
-	lda     #<(L0019)
-	ldx     #>(L0019)
+	lda     #<(L001D)
+	ldx     #>(L001D)
 	jsr     pushax
 	lda     #<(_Title)
 	ldx     #>(_Title)
@@ -108,8 +123,8 @@ _initPlacement:
 	lda     _ydim
 	lsr     a
 	jsr     _gotoxy
-	lda     #<(L0022)
-	ldx     #>(L0022)
+	lda     #<(L0026)
+	ldx     #>(L0026)
 	jsr     pushax
 	lda     #<(_Inst)
 	ldx     #>(_Inst)
@@ -132,8 +147,8 @@ _initPlacement:
 	jsr     _clrscr
 	lda     #$01
 	sta     _i
-	jmp     L00FF
-L00FE:	lda     _i
+	jmp     L028E
+L028D:	lda     _i
 	clc
 	adc     #$05
 	jsr     pusha
@@ -142,13 +157,13 @@ L00FE:	lda     _i
 	lda     #$EF
 	jsr     _cputcxy
 	inc     _i
-L00FF:	lda     _i
+L028E:	lda     _i
 	cmp     #$0B
-	bcc     L00FE
+	bcc     L028D
 	lda     #$01
 	sta     _i
-	jmp     L0101
-L0100:	lda     _i
+	jmp     L0290
+L028F:	lda     _i
 	clc
 	adc     #$05
 	jsr     pusha
@@ -157,13 +172,13 @@ L0100:	lda     _i
 	lda     #$F7
 	jsr     _cputcxy
 	inc     _i
-L0101:	lda     _i
+L0290:	lda     _i
 	cmp     #$0B
-	bcc     L0100
+	bcc     L028F
 	lda     #$01
 	sta     _i
-	jmp     L0102
-L003F:	lda     #$05
+	jmp     L0291
+L0043:	lda     #$05
 	jsr     pusha
 	lda     _i
 	clc
@@ -172,13 +187,13 @@ L003F:	lda     #$05
 	lda     #$EA
 	jsr     _cputcxy
 	inc     _i
-L0102:	lda     _i
+L0291:	lda     _i
 	cmp     #$15
-	bcc     L003F
+	bcc     L0043
 	lda     #$01
 	sta     _i
-	jmp     L0103
-L004A:	lda     #$10
+	jmp     L0292
+L004E:	lda     #$10
 	jsr     pusha
 	lda     _i
 	clc
@@ -187,9 +202,451 @@ L004A:	lda     #$10
 	lda     #$F4
 	jsr     _cputcxy
 	inc     _i
-L0103:	lda     _i
+L0292:	lda     _i
 	cmp     #$15
-	bcc     L004A
+	bcc     L004E
+	lda     #$03
+	sta     _j
+	lda     #$07
+	sta     _i
+	jmp     L0294
+L005F:	lda     _i
+	jsr     pusha
+	lda     _j
+	jsr     pusha
+	lda     #$20
+	jsr     _cputcxy
+	inc     _j
+L0293:	lda     _j
+	cmp     #$17
+	bcc     L005F
+	inc     _i
+L0294:	lda     _i
+	cmp     #$0F
+	bcc     L0293
+	rts
+
+.endproc
+
+; ---------------------------------------------------------------
+; void __near__ drawTet (void)
+; ---------------------------------------------------------------
+
+.segment	"CODE"
+
+.proc	_drawTet: near
+
+.segment	"CODE"
+
+	lda     _curTet
+	bne     L0295
+	lda     #$0E
+	jsr     _textcolor
+	lda     #$0E
+	sta     _curColor
+	lda     #$09
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	lda     _blockTile
+	jsr     _cputcxy
+	lda     #$09
+	sta     _curPos
+	lda     #$03
+	sta     _curPos+1
+	lda     #$0A
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	lda     _blockTile
+	jsr     _cputcxy
+	lda     #$0A
+	sta     _curPos+2
+	lda     #$03
+	sta     _curPos+3
+	lda     #$0B
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	lda     _blockTile
+	jsr     _cputcxy
+	lda     #$0B
+	sta     _curPos+4
+	lda     #$03
+	sta     _curPos+5
+	lda     #$0C
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	lda     _blockTile
+	jsr     _cputcxy
+	lda     #$0C
+	sta     _curPos+6
+	lda     #$03
+	sta     _curPos+7
+	lda     #$09
+	sta     _xTet
+	lda     #$04
+	sta     _yTet
+L0295:	lda     _curTet
+	cmp     #$01
+	bne     L0296
+	lda     #$07
+	jsr     _textcolor
+	lda     #$07
+	sta     _curColor
+	lda     #$0A
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	lda     _blockTile
+	jsr     _cputcxy
+	lda     #$0A
+	sta     _curPos
+	lda     #$03
+	sta     _curPos+1
+	lda     #$0B
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	lda     _blockTile
+	jsr     _cputcxy
+	lda     #$0B
+	sta     _curPos+2
+	lda     #$03
+	sta     _curPos+3
+	lda     #$0A
+	jsr     pusha
+	lda     #$04
+	jsr     pusha
+	lda     _blockTile
+	jsr     _cputcxy
+	lda     #$0A
+	sta     _curPos+4
+	lda     #$04
+	sta     _curPos+5
+	lda     #$0B
+	jsr     pusha
+	lda     #$04
+	jsr     pusha
+	lda     _blockTile
+	jsr     _cputcxy
+	lda     #$0B
+	sta     _curPos+6
+	lda     #$04
+	sta     _curPos+7
+	lda     #$0A
+	sta     _xTet
+	lda     #$04
+	sta     _yTet
+L0296:	lda     _curTet
+	cmp     #$02
+	jne     L0297
+	lda     #$04
+	jsr     _textcolor
+	lda     #$04
+	sta     _curColor
+	lda     _initPlacement
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	lda     _blockTile
+	jsr     _cputcxy
+	lda     _initPlacement
+	sta     _curPos
+	lda     #$03
+	sta     _curPos+1
+	lda     _initPlacement
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	lda     _blockTile
+	jsr     _cputcxy
+	lda     _initPlacement
+	clc
+	adc     #$01
+	sta     _curPos+2
+	lda     #$03
+	sta     _curPos+3
+	lda     _initPlacement
+	clc
+	adc     #$02
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	lda     _blockTile
+	jsr     _cputcxy
+	lda     _initPlacement
+	clc
+	adc     #$02
+	sta     _curPos+4
+	lda     #$03
+	sta     _curPos+5
+	lda     _initPlacement
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     #$04
+	jsr     pusha
+	lda     _blockTile
+	jsr     _cputcxy
+	lda     _initPlacement
+	clc
+	adc     #$01
+	sta     _curPos+6
+	lda     #$04
+	sta     _curPos+7
+	lda     _initPlacement
+	sta     _xTet
+	lda     #$04
+	sta     _yTet
+L0297:	lda     _curTet
+	cmp     #$03
+	jne     L0298
+	lda     #$05
+	jsr     _textcolor
+	lda     #$05
+	sta     _curColor
+	lda     _initPlacement
+	jsr     pusha
+	lda     #$04
+	jsr     pusha
+	lda     _blockTile
+	jsr     _cputcxy
+	lda     _initPlacement
+	sta     _curPos
+	lda     #$04
+	sta     _curPos+1
+	lda     _initPlacement
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     #$04
+	jsr     pusha
+	lda     _blockTile
+	jsr     _cputcxy
+	lda     _initPlacement
+	clc
+	adc     #$01
+	sta     _curPos+2
+	lda     #$04
+	sta     _curPos+3
+	lda     _initPlacement
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	lda     _blockTile
+	jsr     _cputcxy
+	lda     _initPlacement
+	clc
+	adc     #$01
+	sta     _curPos+4
+	lda     #$03
+	sta     _curPos+5
+	lda     _initPlacement
+	clc
+	adc     #$02
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	lda     _blockTile
+	jsr     _cputcxy
+	lda     _initPlacement
+	clc
+	adc     #$02
+	sta     _curPos+6
+	lda     #$03
+	sta     _curPos+7
+	lda     _initPlacement
+	sta     _xTet
+	lda     #$04
+	sta     _yTet
+L0298:	lda     _curTet
+	cmp     #$04
+	jne     L0299
+	lda     #$02
+	jsr     _textcolor
+	lda     #$02
+	sta     _curColor
+	lda     _initPlacement
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	lda     _blockTile
+	jsr     _cputcxy
+	lda     _initPlacement
+	sta     _curPos
+	lda     #$03
+	sta     _curPos+1
+	lda     _initPlacement
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	lda     _blockTile
+	jsr     _cputcxy
+	lda     _initPlacement
+	clc
+	adc     #$01
+	sta     _curPos+2
+	lda     #$03
+	sta     _curPos+3
+	lda     _initPlacement
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     #$04
+	jsr     pusha
+	lda     _blockTile
+	jsr     _cputcxy
+	lda     _initPlacement
+	clc
+	adc     #$01
+	sta     _curPos+4
+	lda     #$04
+	sta     _curPos+5
+	lda     _initPlacement
+	clc
+	adc     #$02
+	jsr     pusha
+	lda     #$04
+	jsr     pusha
+	lda     _blockTile
+	jsr     _cputcxy
+	lda     _initPlacement
+	clc
+	adc     #$02
+	sta     _curPos+6
+	lda     #$04
+	sta     _curPos+7
+	lda     _initPlacement
+	sta     _xTet
+	lda     #$04
+	sta     _yTet
+L0299:	lda     _curTet
+	cmp     #$05
+	jne     L029A
+	lda     #$08
+	jsr     _textcolor
+	lda     #$08
+	sta     _curColor
+	lda     _initPlacement
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	lda     _blockTile
+	jsr     _cputcxy
+	lda     _initPlacement
+	sta     _curPos
+	lda     #$03
+	sta     _curPos+1
+	lda     _initPlacement
+	jsr     pusha
+	lda     #$04
+	jsr     pusha
+	lda     _blockTile
+	jsr     _cputcxy
+	lda     _initPlacement
+	sta     _curPos+2
+	lda     #$04
+	sta     _curPos+3
+	lda     _initPlacement
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     #$04
+	jsr     pusha
+	lda     _blockTile
+	jsr     _cputcxy
+	lda     _initPlacement
+	clc
+	adc     #$01
+	sta     _curPos+4
+	lda     #$04
+	sta     _curPos+5
+	lda     _initPlacement
+	clc
+	adc     #$02
+	jsr     pusha
+	lda     #$04
+	jsr     pusha
+	lda     _blockTile
+	jsr     _cputcxy
+	lda     _initPlacement
+	clc
+	adc     #$02
+	sta     _curPos+6
+	lda     #$04
+	sta     _curPos+7
+	lda     _initPlacement
+	sta     _xTet
+	lda     #$04
+	sta     _yTet
+L029A:	lda     _curTet
+	cmp     #$06
+	jne     L029B
+	jsr     _textcolor
+	lda     #$06
+	sta     _curColor
+	lda     _initPlacement
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	lda     _blockTile
+	jsr     _cputcxy
+	lda     _initPlacement
+	sta     _curPos
+	lda     #$03
+	sta     _curPos+1
+	lda     _initPlacement
+	jsr     pusha
+	lda     #$04
+	jsr     pusha
+	lda     _blockTile
+	jsr     _cputcxy
+	lda     _initPlacement
+	sta     _curPos+2
+	lda     #$04
+	sta     _curPos+3
+	lda     _initPlacement
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     #$04
+	jsr     pusha
+	lda     _blockTile
+	jsr     _cputcxy
+	lda     _initPlacement
+	clc
+	adc     #$01
+	sta     _curPos+4
+	lda     #$04
+	sta     _curPos+5
+	lda     _initPlacement
+	clc
+	adc     #$02
+	jsr     pusha
+	lda     #$04
+	jsr     pusha
+	lda     _blockTile
+	jsr     _cputcxy
+	lda     _initPlacement
+	clc
+	adc     #$02
+	sta     _curPos+6
+	lda     #$04
+	sta     _curPos+7
+	lda     _initPlacement
+	sta     _xTet
+	lda     #$04
+	sta     _yTet
+L029B:	lda     #$00
+	sta     _rotState
 	rts
 
 .endproc
@@ -224,273 +681,249 @@ L0103:	lda     _i
 .endproc
 
 ; ---------------------------------------------------------------
-; void __near__ drawTet (void)
+; unsigned char __near__ checkCollision (void)
 ; ---------------------------------------------------------------
 
 .segment	"CODE"
 
-.proc	_drawTet: near
+.proc	_checkCollision: near
 
 .segment	"CODE"
 
-	lda     #$A9
+	lda     #$00
 	jsr     pusha
-	lda     _curTet
-	bne     L0104
-	lda     #$0E
-	jsr     _textcolor
-	lda     #$09
-	jsr     pusha
-	lda     #$03
-	jsr     pusha
-	ldy     #$02
-	lda     (sp),y
-	jsr     _cputcxy
-	lda     #$0A
-	jsr     pusha
-	lda     #$03
-	jsr     pusha
-	ldy     #$02
-	lda     (sp),y
-	jsr     _cputcxy
-	lda     #$0B
-	jsr     pusha
-	lda     #$03
-	jsr     pusha
-	ldy     #$02
-	lda     (sp),y
-	jsr     _cputcxy
-	lda     #$0C
-	jsr     pusha
-	lda     #$03
-	jsr     pusha
-	ldy     #$02
-	lda     (sp),y
-	jsr     _cputcxy
-L0104:	lda     _curTet
-	cmp     #$01
-	bne     L0105
-	lda     #$07
-	jsr     _textcolor
-	lda     #$0A
-	jsr     pusha
-	lda     #$03
-	jsr     pusha
-	ldy     #$02
-	lda     (sp),y
-	jsr     _cputcxy
-	lda     #$0B
-	jsr     pusha
-	lda     #$03
-	jsr     pusha
-	ldy     #$02
-	lda     (sp),y
-	jsr     _cputcxy
-	lda     #$0A
-	jsr     pusha
-	lda     #$04
-	jsr     pusha
-	ldy     #$02
-	lda     (sp),y
-	jsr     _cputcxy
-	lda     #$0B
-	jsr     pusha
-	lda     #$04
-	jsr     pusha
-	ldy     #$02
-	lda     (sp),y
-	jsr     _cputcxy
-L0105:	lda     _curTet
-	cmp     #$02
-	bne     L0106
-	lda     #$04
-	jsr     _textcolor
-	lda     _initPlacement
-	jsr     pusha
-	lda     #$03
-	jsr     pusha
-	ldy     #$02
-	lda     (sp),y
-	jsr     _cputcxy
-	lda     _initPlacement
+	tax
+	sta     _i
+	jmp     L02A8
+L02A6:	lda     _i
+	asl     a
+	bcc     L02A2
+	ldx     #$01
 	clc
-	adc     #$01
-	jsr     pusha
-	lda     #$03
-	jsr     pusha
-	ldy     #$02
-	lda     (sp),y
-	jsr     _cputcxy
-	lda     _initPlacement
+L02A2:	adc     #<(_curPos)
+	sta     ptr1
+	txa
+	adc     #>(_curPos)
+	sta     ptr1+1
+	ldy     #$01
+	ldx     #$00
+	lda     (ptr1),y
+	sec
+	dey
+	sbc     (sp),y
+	bcc     L02A7
+	beq     L02A7
+	lda     _i
+	asl     a
+	bcc     L02A3
+	inx
 	clc
-	adc     #$02
-	jsr     pusha
-	lda     #$03
-	jsr     pusha
-	ldy     #$02
-	lda     (sp),y
-	jsr     _cputcxy
-	lda     _initPlacement
-	clc
-	adc     #$01
-	jsr     pusha
-	lda     #$04
-	jsr     pusha
-	ldy     #$02
-	lda     (sp),y
-	jsr     _cputcxy
-L0106:	lda     _curTet
-	cmp     #$03
-	bne     L0107
-	lda     #$05
-	jsr     _textcolor
-	lda     _initPlacement
-	jsr     pusha
-	lda     #$04
-	jsr     pusha
-	ldy     #$02
-	lda     (sp),y
-	jsr     _cputcxy
-	lda     _initPlacement
-	clc
-	adc     #$01
-	jsr     pusha
-	lda     #$04
-	jsr     pusha
-	ldy     #$02
-	lda     (sp),y
-	jsr     _cputcxy
-	lda     _initPlacement
-	clc
-	adc     #$01
-	jsr     pusha
-	lda     #$03
-	jsr     pusha
-	ldy     #$02
-	lda     (sp),y
-	jsr     _cputcxy
-	lda     _initPlacement
-	clc
-	adc     #$02
-	jsr     pusha
-	lda     #$03
-	jsr     pusha
-	ldy     #$02
-	lda     (sp),y
-	jsr     _cputcxy
-L0107:	lda     _curTet
+L02A3:	adc     #<(_curPos)
+	sta     ptr1
+	txa
+	adc     #>(_curPos)
+	sta     ptr1+1
+	iny
+	lda     (ptr1),y
+	dey
+	sta     (sp),y
+L02A7:	inc     _i
+	ldx     #$00
+L02A8:	lda     _i
 	cmp     #$04
-	bne     L0108
-	lda     #$02
+	bcc     L02A6
+	stx     _i
+	jmp     L02AB
+L02A9:	lda     _i
+	asl     a
+	bcc     L02A4
+	ldx     #$01
+	clc
+L02A4:	adc     #<(_curPos)
+	sta     ptr1
+	txa
+	adc     #>(_curPos)
+	sta     ptr1+1
+	ldy     #$01
+	ldx     #$00
+	lda     (ptr1),y
+	dey
+	cmp     (sp),y
+	bcc     L022C
+	lda     _i
+	asl     a
+	bcc     L029F
+	inx
+L029F:	sta     ptr1
+	txa
+	clc
+	adc     #>(_curPos)
+	sta     ptr1+1
+	ldy     #<(_curPos)
+	lda     (ptr1),y
+	jsr     pusha
+	ldx     #$00
+	lda     _i
+	asl     a
+	bcc     L02A5
+	inx
+	clc
+L02A5:	adc     #<(_curPos)
+	sta     ptr1
+	txa
+	adc     #>(_curPos)
+	sta     ptr1+1
+	ldy     #$01
+	lda     (ptr1),y
+	clc
+	adc     #$01
+	jsr     _gotoxy
+	jsr     _cpeekc
+	cmp     #$20
+	beq     L022C
+	ldx     #$00
+	lda     #$01
+	jmp     incsp1
+L022C:	inc     _i
+	ldx     #$00
+L02AB:	lda     _i
+	cmp     #$04
+	bcc     L02A9
+	txa
+	jmp     incsp1
+
+.endproc
+
+; ---------------------------------------------------------------
+; void __near__ handleTet (void)
+; ---------------------------------------------------------------
+
+.segment	"CODE"
+
+.proc	_handleTet: near
+
+.segment	"CODE"
+
+	jsr     _checkCollision
+	cmp     #$01
+	bne     L0232
+	sta     _isPlaced
+	rts
+L0232:	lda     #$00
+	sta     _i
+	jmp     L02B6
+L0239:	lda     #$00
 	jsr     _textcolor
-	lda     _initPlacement
+	ldx     #$00
+	lda     _i
+	asl     a
+	bcc     L02AC
+	inx
+L02AC:	sta     ptr1
+	txa
+	clc
+	adc     #>(_curPos)
+	sta     ptr1+1
+	ldy     #<(_curPos)
+	lda     (ptr1),y
 	jsr     pusha
-	lda     #$03
+	ldx     #$00
+	lda     _i
+	asl     a
+	bcc     L02B2
+	inx
+	clc
+L02B2:	adc     #<(_curPos)
+	sta     ptr1
+	txa
+	adc     #>(_curPos)
+	sta     ptr1+1
+	ldy     #$01
+	lda     (ptr1),y
 	jsr     pusha
-	ldy     #$02
+	lda     #$01
+	jsr     _cclearxy
+	inc     _i
+L02B6:	lda     _i
+	cmp     #$04
+	bcc     L0239
+	ldx     #$00
+	stx     _i
+	jmp     L02B8
+L02B7:	lda     _i
+	asl     a
+	bcc     L02B3
+	ldx     #$01
+	clc
+L02B3:	adc     #<(_curPos)
+	sta     ptr1
+	txa
+	adc     #>(_curPos)
+	sta     ptr1+1
+	ldy     #$01
+	lda     (ptr1),y
+	jsr     pusha
+	ldx     #$00
+	lda     _i
+	asl     a
+	bcc     L02B4
+	inx
+	clc
+L02B4:	adc     #<(_curPos)
+	sta     ptr1
+	txa
+	adc     #>(_curPos)
+	sta     ptr1+1
+	ldy     #$00
 	lda     (sp),y
-	jsr     _cputcxy
-	lda     _initPlacement
 	clc
 	adc     #$01
-	jsr     pusha
-	lda     #$03
-	jsr     pusha
-	ldy     #$02
-	lda     (sp),y
-	jsr     _cputcxy
-	lda     _initPlacement
-	clc
-	adc     #$01
-	jsr     pusha
-	lda     #$04
-	jsr     pusha
-	ldy     #$02
-	lda     (sp),y
-	jsr     _cputcxy
-	lda     _initPlacement
-	clc
-	adc     #$02
-	jsr     pusha
-	lda     #$04
-	jsr     pusha
-	ldy     #$02
-	lda     (sp),y
-	jsr     _cputcxy
-L0108:	lda     _curTet
-	cmp     #$05
-	bne     L0109
-	lda     #$08
+	iny
+	sta     (ptr1),y
+	inc     _i
+	jsr     incsp1
+	ldx     #$00
+L02B8:	lda     _i
+	cmp     #$04
+	bcc     L02B7
+	stx     _i
+	lda     _curColor
 	jsr     _textcolor
-	lda     _initPlacement
-	jsr     pusha
-	lda     #$03
-	jsr     pusha
-	ldy     #$02
-	lda     (sp),y
-	jsr     _cputcxy
-	lda     _initPlacement
-	jsr     pusha
-	lda     #$04
-	jsr     pusha
-	ldy     #$02
-	lda     (sp),y
-	jsr     _cputcxy
-	lda     _initPlacement
+	jmp     L025C
+L02B9:	lda     _i
+	asl     a
+	bcc     L02B0
+	ldx     #$01
+L02B0:	sta     ptr1
+	txa
 	clc
-	adc     #$01
+	adc     #>(_curPos)
+	sta     ptr1+1
+	ldy     #<(_curPos)
+	lda     (ptr1),y
 	jsr     pusha
-	lda     #$04
-	jsr     pusha
-	ldy     #$02
-	lda     (sp),y
-	jsr     _cputcxy
-	lda     _initPlacement
+	ldx     #$00
+	lda     _i
+	asl     a
+	bcc     L02B5
+	inx
 	clc
-	adc     #$02
+L02B5:	adc     #<(_curPos)
+	sta     ptr1
+	txa
+	adc     #>(_curPos)
+	sta     ptr1+1
+	ldy     #$01
+	lda     (ptr1),y
 	jsr     pusha
-	lda     #$04
-	jsr     pusha
-	ldy     #$02
-	lda     (sp),y
+	lda     #$A9
 	jsr     _cputcxy
-L0109:	lda     _curTet
-	cmp     #$06
-	bne     L00D4
-	jsr     _textcolor
-	lda     _initPlacement
-	jsr     pusha
-	lda     #$03
-	jsr     pusha
-	ldy     #$02
-	lda     (sp),y
-	jsr     _cputcxy
-	lda     _initPlacement
-	jsr     pusha
-	lda     #$04
-	jsr     pusha
-	ldy     #$02
-	lda     (sp),y
-	jsr     _cputcxy
-	lda     _initPlacement
-	clc
-	adc     #$01
-	jsr     pusha
-	lda     #$04
-	jsr     pusha
-	ldy     #$02
-	lda     (sp),y
-	jsr     _cputcxy
-	lda     _initPlacement
-	clc
-	adc     #$02
-	jsr     pusha
-	lda     #$04
-	jsr     pusha
-	ldy     #$02
-	lda     (sp),y
-	jsr     _cputcxy
-L00D4:	jmp     incsp1
+	inc     _i
+L025C:	ldx     #$00
+	lda     _i
+	cmp     #$04
+	bcc     L02B9
+	rts
 
 .endproc
 
@@ -504,12 +937,25 @@ L00D4:	jmp     incsp1
 
 .segment	"CODE"
 
-	jmp     L00EC
-L00EA:	jsr     _pickTet
+	jsr     _pickTet
 	jsr     _drawTet
-L00EC:	lda     _isGameOver
+	jmp     L026C
+L02BA:	lda     _isPlaced
 	cmp     #$01
-	bne     L00EA
+	bne     L026E
+	jsr     _pickTet
+	jsr     _drawTet
+	lda     #$00
+	sta     _isPlaced
+L026E:	jsr     _handleTet
+	lda     #0
+	sta     162
+wait:	lda     162
+	cmp     #30
+	bne     wait
+L026C:	lda     _isGameOver
+	cmp     #$01
+	bne     L02BA
 	rts
 
 .endproc
@@ -533,9 +979,9 @@ L00EC:	lda     _isGameOver
 	ldx     #>(_ydim)
 	jsr     _screensize
 	jsr     _draw_title
-L00F7:	jsr     _cgetc
+L0286:	jsr     _cgetc
 	cmp     #$58
-	bne     L00F7
+	bne     L0286
 	jsr     _draw_game
 	jsr     _game_loop
 	ldx     #$00

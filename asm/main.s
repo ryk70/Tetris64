@@ -32,9 +32,9 @@ _Title:
 	.byte	$D4,$C5,$D4,$D2,$C9,$D3,$36,$34,$00
 _Inst:
 	.byte	$D0,$D2,$C5,$D3,$D3,$20,$D8,$20,$D4,$CF,$20,$D0,$CC,$C1,$D9,$00
-L0020:
+L0022:
 	.byte	$25,$53,$00
-L0017	:=	L0020+0
+L0019	:=	L0022+0
 
 .segment	"BSS"
 
@@ -49,6 +49,14 @@ _isGameOver:
 _linesCleared:
 	.res	2,$00
 _curTet:
+	.res	1,$00
+_xTet:
+	.res	1,$00
+_yTet:
+	.res	1,$00
+_isPlaced:
+	.res	1,$00
+_initPlacement:
 	.res	1,$00
 
 ; ---------------------------------------------------------------
@@ -81,8 +89,8 @@ _curTet:
 	sec
 	sbc     #$01
 	jsr     _gotoxy
-	lda     #<(L0017)
-	ldx     #>(L0017)
+	lda     #<(L0019)
+	ldx     #>(L0019)
 	jsr     pushax
 	lda     #<(_Title)
 	ldx     #>(_Title)
@@ -100,8 +108,8 @@ _curTet:
 	lda     _ydim
 	lsr     a
 	jsr     _gotoxy
-	lda     #<(L0020)
-	ldx     #>(L0020)
+	lda     #<(L0022)
+	ldx     #>(L0022)
 	jsr     pushax
 	lda     #<(_Inst)
 	ldx     #>(_Inst)
@@ -124,8 +132,8 @@ _curTet:
 	jsr     _clrscr
 	lda     #$01
 	sta     _i
-	jmp     L006C
-L006B:	lda     _i
+	jmp     L00FF
+L00FE:	lda     _i
 	clc
 	adc     #$05
 	jsr     pusha
@@ -134,13 +142,13 @@ L006B:	lda     _i
 	lda     #$EF
 	jsr     _cputcxy
 	inc     _i
-L006C:	lda     _i
+L00FF:	lda     _i
 	cmp     #$0B
-	bcc     L006B
+	bcc     L00FE
 	lda     #$01
 	sta     _i
-	jmp     L006E
-L006D:	lda     _i
+	jmp     L0101
+L0100:	lda     _i
 	clc
 	adc     #$05
 	jsr     pusha
@@ -149,13 +157,13 @@ L006D:	lda     _i
 	lda     #$F7
 	jsr     _cputcxy
 	inc     _i
-L006E:	lda     _i
+L0101:	lda     _i
 	cmp     #$0B
-	bcc     L006D
+	bcc     L0100
 	lda     #$01
 	sta     _i
-	jmp     L006F
-L003D:	lda     #$05
+	jmp     L0102
+L003F:	lda     #$05
 	jsr     pusha
 	lda     _i
 	clc
@@ -164,13 +172,13 @@ L003D:	lda     #$05
 	lda     #$EA
 	jsr     _cputcxy
 	inc     _i
-L006F:	lda     _i
+L0102:	lda     _i
 	cmp     #$15
-	bcc     L003D
+	bcc     L003F
 	lda     #$01
 	sta     _i
-	jmp     L0070
-L0048:	lda     #$10
+	jmp     L0103
+L004A:	lda     #$10
 	jsr     pusha
 	lda     _i
 	clc
@@ -179,9 +187,9 @@ L0048:	lda     #$10
 	lda     #$F4
 	jsr     _cputcxy
 	inc     _i
-L0070:	lda     _i
+L0103:	lda     _i
 	cmp     #$15
-	bcc     L0048
+	bcc     L004A
 	rts
 
 .endproc
@@ -203,6 +211,14 @@ L0070:	lda     _i
 	lda     #$07
 	jsr     tosmoda0
 	sta     _curTet
+	jsr     _rand
+	jsr     pushax
+	ldx     #$00
+	lda     #$07
+	jsr     tosmoda0
+	clc
+	adc     #$06
+	sta     _initPlacement
 	rts
 
 .endproc
@@ -217,7 +233,264 @@ L0070:	lda     _i
 
 .segment	"CODE"
 
-	rts
+	lda     #$A9
+	jsr     pusha
+	lda     _curTet
+	bne     L0104
+	lda     #$0E
+	jsr     _textcolor
+	lda     #$09
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	ldy     #$02
+	lda     (sp),y
+	jsr     _cputcxy
+	lda     #$0A
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	ldy     #$02
+	lda     (sp),y
+	jsr     _cputcxy
+	lda     #$0B
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	ldy     #$02
+	lda     (sp),y
+	jsr     _cputcxy
+	lda     #$0C
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	ldy     #$02
+	lda     (sp),y
+	jsr     _cputcxy
+L0104:	lda     _curTet
+	cmp     #$01
+	bne     L0105
+	lda     #$07
+	jsr     _textcolor
+	lda     #$0A
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	ldy     #$02
+	lda     (sp),y
+	jsr     _cputcxy
+	lda     #$0B
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	ldy     #$02
+	lda     (sp),y
+	jsr     _cputcxy
+	lda     #$0A
+	jsr     pusha
+	lda     #$04
+	jsr     pusha
+	ldy     #$02
+	lda     (sp),y
+	jsr     _cputcxy
+	lda     #$0B
+	jsr     pusha
+	lda     #$04
+	jsr     pusha
+	ldy     #$02
+	lda     (sp),y
+	jsr     _cputcxy
+L0105:	lda     _curTet
+	cmp     #$02
+	bne     L0106
+	lda     #$04
+	jsr     _textcolor
+	lda     _initPlacement
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	ldy     #$02
+	lda     (sp),y
+	jsr     _cputcxy
+	lda     _initPlacement
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	ldy     #$02
+	lda     (sp),y
+	jsr     _cputcxy
+	lda     _initPlacement
+	clc
+	adc     #$02
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	ldy     #$02
+	lda     (sp),y
+	jsr     _cputcxy
+	lda     _initPlacement
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     #$04
+	jsr     pusha
+	ldy     #$02
+	lda     (sp),y
+	jsr     _cputcxy
+L0106:	lda     _curTet
+	cmp     #$03
+	bne     L0107
+	lda     #$05
+	jsr     _textcolor
+	lda     _initPlacement
+	jsr     pusha
+	lda     #$04
+	jsr     pusha
+	ldy     #$02
+	lda     (sp),y
+	jsr     _cputcxy
+	lda     _initPlacement
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     #$04
+	jsr     pusha
+	ldy     #$02
+	lda     (sp),y
+	jsr     _cputcxy
+	lda     _initPlacement
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	ldy     #$02
+	lda     (sp),y
+	jsr     _cputcxy
+	lda     _initPlacement
+	clc
+	adc     #$02
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	ldy     #$02
+	lda     (sp),y
+	jsr     _cputcxy
+L0107:	lda     _curTet
+	cmp     #$04
+	bne     L0108
+	lda     #$02
+	jsr     _textcolor
+	lda     _initPlacement
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	ldy     #$02
+	lda     (sp),y
+	jsr     _cputcxy
+	lda     _initPlacement
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	ldy     #$02
+	lda     (sp),y
+	jsr     _cputcxy
+	lda     _initPlacement
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     #$04
+	jsr     pusha
+	ldy     #$02
+	lda     (sp),y
+	jsr     _cputcxy
+	lda     _initPlacement
+	clc
+	adc     #$02
+	jsr     pusha
+	lda     #$04
+	jsr     pusha
+	ldy     #$02
+	lda     (sp),y
+	jsr     _cputcxy
+L0108:	lda     _curTet
+	cmp     #$05
+	bne     L0109
+	lda     #$08
+	jsr     _textcolor
+	lda     _initPlacement
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	ldy     #$02
+	lda     (sp),y
+	jsr     _cputcxy
+	lda     _initPlacement
+	jsr     pusha
+	lda     #$04
+	jsr     pusha
+	ldy     #$02
+	lda     (sp),y
+	jsr     _cputcxy
+	lda     _initPlacement
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     #$04
+	jsr     pusha
+	ldy     #$02
+	lda     (sp),y
+	jsr     _cputcxy
+	lda     _initPlacement
+	clc
+	adc     #$02
+	jsr     pusha
+	lda     #$04
+	jsr     pusha
+	ldy     #$02
+	lda     (sp),y
+	jsr     _cputcxy
+L0109:	lda     _curTet
+	cmp     #$06
+	bne     L00D4
+	jsr     _textcolor
+	lda     _initPlacement
+	jsr     pusha
+	lda     #$03
+	jsr     pusha
+	ldy     #$02
+	lda     (sp),y
+	jsr     _cputcxy
+	lda     _initPlacement
+	jsr     pusha
+	lda     #$04
+	jsr     pusha
+	ldy     #$02
+	lda     (sp),y
+	jsr     _cputcxy
+	lda     _initPlacement
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     #$04
+	jsr     pusha
+	ldy     #$02
+	lda     (sp),y
+	jsr     _cputcxy
+	lda     _initPlacement
+	clc
+	adc     #$02
+	jsr     pusha
+	lda     #$04
+	jsr     pusha
+	ldy     #$02
+	lda     (sp),y
+	jsr     _cputcxy
+L00D4:	jmp     incsp1
 
 .endproc
 
@@ -231,12 +504,12 @@ L0070:	lda     _i
 
 .segment	"CODE"
 
-	jmp     L0059
-L0057:	jsr     _pickTet
+	jmp     L00EC
+L00EA:	jsr     _pickTet
 	jsr     _drawTet
-L0059:	lda     _isGameOver
+L00EC:	lda     _isGameOver
 	cmp     #$01
-	bne     L0057
+	bne     L00EA
 	rts
 
 .endproc
@@ -260,9 +533,9 @@ L0059:	lda     _isGameOver
 	ldx     #>(_ydim)
 	jsr     _screensize
 	jsr     _draw_title
-L0064:	jsr     _cgetc
+L00F7:	jsr     _cgetc
 	cmp     #$58
-	bne     L0064
+	bne     L00F7
 	jsr     _draw_game
 	jsr     _game_loop
 	ldx     #$00

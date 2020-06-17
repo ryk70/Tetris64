@@ -79,8 +79,6 @@ static unsigned int linesCleared;
 //      #ZZ
 //      #Z#
 //      ^is counted as the coordinate
-static BYTE xTet;
-static BYTE yTet;
 static BYTE curColor;
 static BYTE initPlacement;
 static BYTE rotState;
@@ -89,7 +87,6 @@ static BYTE dirKey;
 // Data
 static BYTE i = 0;
 static BYTE j = 0;
-
 
 static BYTE isPlaced = 0;
 static BYTE blockTile = 169;
@@ -148,16 +145,16 @@ static void draw_game(void) {
                 ++i;
         }
 
-        j = 3;
-        i = 7;
-        while (i < 15) {
-                while (j < 23) {
+
+        i = 3;
+        j = 6;
+        while (i < 23) {
+                while (j < 16) {
                         cputcxy(i, j, 32);
                         ++j;
                 }
                 ++i;
         }
-
 }
 
 static BYTE checkIfEmpty (BYTE x, BYTE y) {
@@ -190,9 +187,6 @@ static void drawTet() {
 
                 curPos[3][0] = 12;
                 curPos[3][1] = 3;
-
-                xTet = 9;
-                yTet = 4;
         }
 
         // Tetronomio 1: O piece
@@ -213,9 +207,6 @@ static void drawTet() {
 
                 curPos[3][0] = 11;
                 curPos[3][1] = 4;
-
-                xTet = 10;
-                yTet = 4;
         }
 
         // Tetronomio 2: T piece
@@ -234,9 +225,6 @@ static void drawTet() {
 
                 curPos[3][0] = initPlacement + 1;
                 curPos[3][1] = 4;
-
-                xTet = initPlacement;
-                yTet = 4;
         }
         
         // Tetronomio 3: S piece
@@ -255,10 +243,6 @@ static void drawTet() {
 
                 curPos[3][0] = initPlacement + 2;
                 curPos[3][1] = 3;
-
-
-                xTet = initPlacement;
-                yTet = 4;
         }
 
         // Tetronomio 4: Z piece
@@ -277,9 +261,6 @@ static void drawTet() {
 
                 curPos[3][0] = initPlacement + 2;
                 curPos[3][1] = 4;
-
-                xTet = initPlacement;
-                yTet = 4;
         }
         
         // Tetronomio 5: J piece
@@ -298,9 +279,6 @@ static void drawTet() {
 
                 curPos[3][0] = initPlacement + 2;
                 curPos[3][1] = 4;
-
-                xTet = initPlacement;
-                yTet = 4;
         }
 
         // Tetronomio 6: L piece
@@ -319,9 +297,6 @@ static void drawTet() {
 
                 curPos[3][0] = initPlacement;
                 curPos[3][1] = 4;
-
-                xTet = initPlacement;
-                yTet = 4;
         }
 
         rotState = 0;
@@ -367,8 +342,17 @@ static BYTE checkBotCollision() {
                         continue;
                 }
                 gotoxy(curPos[i][0], curPos[i][1] + 1);
+                if (curTet == 2 && rotState == 0) {
+                        if (i == 0 || i == 2) {
+                                ++i;
+                                continue;
+                        }
+                }
                 if (cpeekc() != 32) {
                         return 1;
+                }
+                if (curTet == 2 && rotState == 0) {
+
                 }
                 ++i;
         }
@@ -1089,14 +1073,69 @@ static void checkMove() {
         }
 }
 
+static void handleScore() {
+        BYTE cleared[4][2];   
+        BYTE temp = 0;  
+        i = 0;
+        j = 6;
+
+        while (i < 4) {
+                cleared[i][0] = curPos[i][1];
+                while (j < 16) {
+                        temp += checkIfEmpty(j, curPos[i][1]);
+                        ++j;
+                }
+                cleared[i][1] = temp;
+                temp = 0;
+                j = 6;
+                ++i;
+        }
+
+        i = 0;
+        while (i < 4) {
+                if (cleared[i][1] < 10) {
+                        ++i;
+                        continue;
+                }
+                cclearxy(6, cleared[i][0], 10);
+                j = cleared[i][0] - 1;
+                temp = 6;
+                while (j >= 3) {
+                        while (temp < 16) {
+                                gotoxy(temp, j);
+                                if (cpeekc() != blockTile) {
+                                        textcolor(COLOR_BLACK);
+                                        cputcxy(temp, j + 1, 32);
+                                        ++temp;
+                                } else {
+                                        textcolor(cpeekcolor());
+                                        cputcxy(temp, j + 1, blockTile);
+                                        ++temp;
+                                }
+                        }
+                        temp = 6;
+                        --j;
+                }
+
+                ++linesCleared;
+                ++i;
+        }   
+
+}
+
 static void game_loop() {
         pickTet();
         drawTet();
+        gotoxy(20, 20);
+        cprintf("Lines cleared: %d", linesCleared);
         //#define CLK 162
 
         while (isGameOver != 1) {
                 
                 if (isPlaced == 1) {
+                        handleScore();
+                        gotoxy(20, 20);
+                        cprintf("Lines cleared: %d", linesCleared);
                         pickTet();
                         drawTet();
                         isPlaced = 0;

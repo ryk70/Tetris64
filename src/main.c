@@ -163,7 +163,6 @@ static void draw_game(void) {
 static BYTE checkIfEmpty (BYTE x, BYTE y) {
         gotoxy(x, y);
         if (cpeekc() != 32) {
-                isGameOver = 1;
                 return 1;
         }
         return 0;
@@ -291,11 +290,11 @@ static void drawTet() {
                 curPos[0][0] = initPlacement;
                 curPos[0][1] = 3;
 
-                curPos[1][0] = initPlacement;
-                curPos[1][1] = 4;
+                curPos[1][0] = initPlacement + 1;
+                curPos[1][1] = 3;
 
-                curPos[2][0] = initPlacement + 1;
-                curPos[2][1] = 4;
+                curPos[2][0] = initPlacement + 2;
+                curPos[2][1] = 3;
 
                 curPos[3][0] = initPlacement + 2;
                 curPos[3][1] = 4;
@@ -312,13 +311,13 @@ static void drawTet() {
                 curPos[0][0] = initPlacement;
                 curPos[0][1] = 3;
 
-                curPos[1][0] = initPlacement;
-                curPos[1][1] = 4;
+                curPos[1][0] = initPlacement + 1;
+                curPos[1][1] = 3;
 
-                curPos[2][0] = initPlacement + 1;
-                curPos[2][1] = 4;
+                curPos[2][0] = initPlacement + 2;
+                curPos[2][1] = 3;
 
-                curPos[3][0] = initPlacement + 2;
+                curPos[3][0] = initPlacement;
                 curPos[3][1] = 4;
 
                 xTet = initPlacement;
@@ -330,6 +329,7 @@ static void drawTet() {
         i = 0;
         while (i < 4) {
                 if (checkIfEmpty(curPos[i][0], curPos[i][1]) == 1) {
+                        isGameOver = 1;
                         return;
                 }
                 ++i;
@@ -508,6 +508,553 @@ static BYTE checkRightCollision() {
         return 0;
 }
 
+static BYTE checkRotateCollision(BYTE rotDir) {
+        BYTE checker = 0;
+
+        if (curTet == 0) { // I-piece
+                if (rotState == 0) {
+                        checker += checkIfEmpty(curPos[2][0], curPos[2][1] + 1);
+                        checker += checkIfEmpty(curPos[2][0], curPos[2][1] - 1);
+                        checker += checkIfEmpty(curPos[2][0], curPos[2][1] - 2);
+                        if (checker != 0) {
+                                return 1;
+                        }
+                        return 0;
+                }
+
+                checker += checkIfEmpty(curPos[2][0] + 1, curPos[2][1]);
+                checker += checkIfEmpty(curPos[2][0] - 1, curPos[2][1]);
+                checker += checkIfEmpty(curPos[2][0] - 2, curPos[2][1]);
+                if (checker != 0) {
+                        return 1;
+                }
+                return 0;
+        }
+
+        // Skip O-piece, does not rotate
+
+        if (curTet == 2) { // T-piece
+                if (rotState == 0) {
+                        if (checkIfEmpty(curPos[1][0], curPos[1][1] - 1) != 0) {
+                                return 1;
+                        } 
+                        return 0;                  
+                }
+
+                if (rotState == 1) {
+                        if (checkIfEmpty(curPos[1][0] + 1, curPos[1][1]) != 0) {
+                                return 1;
+                        }
+                        return 0;
+                }
+
+                if (rotState == 2) {
+                        if (checkIfEmpty(curPos[1][0], curPos[1][1] + 1) != 0) {
+                                return 1;
+                        }
+                        return 0;
+                }
+                if (rotState == 3) {
+                        
+                        if (checkIfEmpty(curPos[1][0] - 1, curPos[1][1]) != 0) {
+                                return 1;
+                        }
+                        return 0; 
+                       
+                }
+        }
+
+        if (curTet == 3) { // S-piece
+                if (rotState == 0) {
+                     checker += checkIfEmpty(curPos[2][0], curPos[2][1] - 1);
+                     checker += checkIfEmpty(curPos[2][0] + 1, curPos[2][1] + 1);
+                     if (checker != 0) {
+                        return 1;
+                     }
+                     return 0;
+                }
+
+                checker += checkIfEmpty(curPos[1][0], curPos[1][1] + 1);
+                checker += checkIfEmpty(curPos[1][0] - 1, curPos[1][1] + 1);
+                if (checker != 0) {
+                        return 1;
+                }
+                return 0;
+        }
+
+        if (curTet == 4) { // Z-piece
+                if (rotState == 0) {
+                     checker += checkIfEmpty(curPos[1][0] + 1, curPos[1][1] - 1);
+                     checker += checkIfEmpty(curPos[1][0] + 1, curPos[1][1]);
+                     if (checker != 0) {
+                        return 1;
+                     }
+                     return 0;
+                }
+
+                checker += checkIfEmpty(curPos[2][0] - 1, curPos[1][1]);
+                checker += checkIfEmpty(curPos[2][0] + 1, curPos[2][1] + 1);
+                if (checker != 0) {
+                        return 1;
+                }
+                return 0;
+        }
+
+        if (curTet == 5) { // J-piece, some of the cases can be combined but I'm wayyy to lazy
+                if (rotState == 0) {
+                        if (rotDir == 0) {
+                                checker += checkIfEmpty(curPos[1][0], curPos[1][1] - 1);
+                                checker += checkIfEmpty(curPos[1][0], curPos[1][1] + 1);
+                                checker += checkIfEmpty(curPos[1][0] - 1, curPos[1][1] + 1);
+                                if (checker != 0) {
+                                        return 1;
+                                }
+                                return 0;
+                        }
+                        checker += checkIfEmpty(curPos[1][0], curPos[1][1] - 1);
+                        checker += checkIfEmpty(curPos[1][0], curPos[1][1] + 1);
+                        checker += checkIfEmpty(curPos[1][0] + 1, curPos[1][1] - 1);
+                        if (checker != 0) {
+                                return 1;
+                        }
+                        return 0;
+                }
+
+                if (rotState == 1) {
+                        if (rotDir == 0) {
+                                checker += checkIfEmpty(curPos[1][0] + 1, curPos[1][1]);
+                                checker += checkIfEmpty(curPos[1][0] - 1, curPos[1][1]);
+                                checker += checkIfEmpty(curPos[1][0] + 1, curPos[1][1] - 1);
+                                if (checker != 0) {
+                                        return 1;
+                                }
+                                return 0;
+                        }
+                        checker += checkIfEmpty(curPos[1][0] - 1, curPos[1][1]);
+                        checker += checkIfEmpty(curPos[1][0] + 1, curPos[1][1]);
+                        checker += checkIfEmpty(curPos[1][0] + 1, curPos[1][1] + 1);
+                        if (checker != 0) {
+                                return 1;
+                        }
+                        return 0;
+                }
+
+                if (rotState == 2) {
+                        if (rotDir == 0) {
+                                checker += checkIfEmpty(curPos[1][0], curPos[1][1] - 1);
+                                checker += checkIfEmpty(curPos[1][0], curPos[1][1] + 1);
+                                checker += checkIfEmpty(curPos[1][0] + 1, curPos[1][1] - 1);
+                                if (checker != 0) {
+                                        return 1;
+                                }
+                                return 0;
+                        }
+                        checker += checkIfEmpty(curPos[1][0] - 1, curPos[1][1]);
+                        checker += checkIfEmpty(curPos[1][0] + 1, curPos[1][1]);
+                        checker += checkIfEmpty(curPos[1][0] - 1, curPos[1][1] + 1);
+                        if (checker != 0) {
+                                return 1;
+                        }
+                        return 0;
+                }
+
+                if (rotState == 3) {
+                        if (rotDir == 0) {
+                                checker += checkIfEmpty(curPos[1][0] - 1, curPos[1][1]);
+                                checker += checkIfEmpty(curPos[1][0] + 1, curPos[1][1]);
+                                checker += checkIfEmpty(curPos[1][0] + 1, curPos[1][1] + 1);
+                                if (checker != 0) {
+                                        return 1;
+                                }
+                                return 0;
+                        }
+                        checker += checkIfEmpty(curPos[1][0] - 1, curPos[1][1]);
+                        checker += checkIfEmpty(curPos[1][0] + 1, curPos[1][1]);
+                        checker += checkIfEmpty(curPos[1][0] - 1, curPos[1][1] - 1);
+                        if (checker != 0) {
+                                return 1;
+                        }
+                        return 0;
+                }
+        }
+
+        if (curTet == 6) { // L-piece, some of the cases can be combined but I'm wayyy to lazy
+                if (rotState == 0) {
+                        if (rotDir == 0) {
+                                checker += checkIfEmpty(curPos[1][0], curPos[1][1] - 1);
+                                checker += checkIfEmpty(curPos[1][0], curPos[1][1] + 1);
+                                checker += checkIfEmpty(curPos[1][0] - 1, curPos[1][1] - 1);
+                                if (checker != 0) {
+                                        return 1;
+                                }
+                                return 0;
+                        }
+                        checker += checkIfEmpty(curPos[1][0], curPos[1][1] - 1);
+                        checker += checkIfEmpty(curPos[1][0], curPos[1][1] + 1);
+                        checker += checkIfEmpty(curPos[1][0] + 1, curPos[1][1] + 1);
+                        if (checker != 0) {
+                                return 1;
+                        }
+                        return 0;
+                }
+
+                if (rotState == 1) {
+                        if (rotDir == 0) {
+                                checker += checkIfEmpty(curPos[1][0] + 1, curPos[1][1]);
+                                checker += checkIfEmpty(curPos[1][0] - 1, curPos[1][1]);
+                                checker += checkIfEmpty(curPos[1][0] + 1, curPos[1][1] - 1);
+                                if (checker != 0) {
+                                        return 1;
+                                }
+                                return 0;
+                        }
+                        checker += checkIfEmpty(curPos[1][0] - 1, curPos[1][1]);
+                        checker += checkIfEmpty(curPos[1][0] + 1, curPos[1][1]);
+                        checker += checkIfEmpty(curPos[1][0] + 1, curPos[1][1] - 1);
+                        if (checker != 0) {
+                                return 1;
+                        }
+                        return 0;
+                }
+
+                if (rotState == 2) {
+                        if (rotDir == 0) {
+                                checker += checkIfEmpty(curPos[1][0], curPos[1][1] - 1);
+                                checker += checkIfEmpty(curPos[1][0], curPos[1][1] + 1);
+                                checker += checkIfEmpty(curPos[1][0] + 1, curPos[1][1] + 1);
+                                if (checker != 0) {
+                                        return 1;
+                                }
+                                return 0;
+                        }
+                        checker += checkIfEmpty(curPos[1][0] - 1, curPos[1][1]);
+                        checker += checkIfEmpty(curPos[1][0] + 1, curPos[1][1]);
+                        checker += checkIfEmpty(curPos[1][0] - 1, curPos[1][1] - 1);
+                        if (checker != 0) {
+                                return 1;
+                        }
+                        return 0;
+                }
+
+                if (rotState == 3) {
+                        if (rotDir == 0) {
+                                checker += checkIfEmpty(curPos[1][0] - 1, curPos[1][1]);
+                                checker += checkIfEmpty(curPos[1][0] + 1, curPos[1][1]);
+                                checker += checkIfEmpty(curPos[1][0] - 1, curPos[1][1] - 1);
+                                if (checker != 0) {
+                                        return 1;
+                                }
+                                return 0;
+                        }
+                        checker += checkIfEmpty(curPos[1][0] - 1, curPos[1][1]);
+                        checker += checkIfEmpty(curPos[1][0] + 1, curPos[1][1]);
+                        checker += checkIfEmpty(curPos[1][0] + 1, curPos[1][1] - 1);
+                        if (checker != 0) {
+                                return 1;
+                        }
+                        return 0;
+                }
+        }
+
+
+}
+
+static void rotClockwise() {
+        if (curTet == 0) { // I-piece
+                cclearxy(curPos[0][0], curPos[0][1], 1);
+                cclearxy(curPos[1][0], curPos[1][1], 1);
+                cclearxy(curPos[3][0], curPos[3][1], 1);
+
+                if (rotState == 0) {
+                        curPos[0][0] = curPos[2][0];
+                        curPos[0][1] = curPos[2][1] - 2;
+
+                        curPos[1][0] = curPos[2][0];
+                        curPos[1][1] = curPos[2][1] - 1;
+
+                        curPos[3][0] = curPos[2][0];
+                        curPos[3][1] = curPos[2][1] + 1;
+                        rotState = 1;
+                }
+                else if (rotState == 1) {
+                        curPos[0][0] = curPos[2][0] - 2;
+                        curPos[0][1] = curPos[2][1];
+
+                        curPos[1][0] = curPos[2][0] - 1;
+                        curPos[1][1] = curPos[2][1];
+
+                        curPos[3][0] = curPos[2][0] + 1;
+                        curPos[3][1] = curPos[2][1];
+                        rotState = 0;
+                }
+        }
+
+        else if (curTet == 2) { // T-piece
+                if (rotState == 0) {
+                        cclearxy(curPos[2][0], curPos[2][1], 1);
+
+                        curPos[0][0] = curPos[1][0];
+                        curPos[0][1] = curPos[1][1] - 1;
+
+                        curPos[2][0] = curPos[1][0] - 1;
+                        curPos[2][1] = curPos[1][1];
+
+                        curPos[3][0] = curPos[1][0];
+                        curPos[3][1] = curPos[1][1] + 1;
+
+                        rotState = 1;
+                }
+
+                else if (rotState == 1) {
+                        cclearxy(curPos[3][0], curPos[3][1], 1);
+
+                        curPos[0][0] = curPos[1][0] - 1;
+                        curPos[0][1] = curPos[1][1];
+
+                        curPos[2][0] = curPos[1][0] + 1;
+                        curPos[2][1] = curPos[1][1];
+
+                        curPos[3][0] = curPos[1][0];
+                        curPos[3][1] = curPos[1][1] - 1;
+
+                        rotState = 2;
+                }
+
+                else if (rotState == 2) {
+                        cclearxy(curPos[0][0], curPos[0][1], 1);
+
+                        curPos[0][0] = curPos[1][0];
+                        curPos[0][1] = curPos[1][1] - 1;
+
+                        curPos[2][0] = curPos[1][0];
+                        curPos[2][1] = curPos[1][1] + 1;
+
+                        curPos[3][0] = curPos[1][0] + 1;
+                        curPos[3][1] = curPos[1][1];
+
+                        rotState = 3;
+                }
+
+                else if (rotState == 3) {
+                        cclearxy(curPos[0][0], curPos[0][1], 1);
+
+                        curPos[0][0] = curPos[1][0] - 1;
+                        curPos[0][1] = curPos[1][1];
+
+                        curPos[2][0] = curPos[1][0] + 1;
+                        curPos[2][1] = curPos[1][1];
+
+                        curPos[3][0] = curPos[1][0];
+                        curPos[3][1] = curPos[1][1] + 1;
+
+                        rotState = 0;  
+                }
+        }
+
+        else if (curTet == 3) { // S-piece
+                if (rotState == 0) {
+                        cclearxy(curPos[0][0], curPos[0][1], 1);
+                        cclearxy(curPos[1][0], curPos[1][1], 1);
+
+                        curPos[0][0] = curPos[2][0];
+                        curPos[0][1] = curPos[2][1] - 1;
+
+                        curPos[1][0] = curPos[2][0];
+                        curPos[1][1] = curPos[2][1];
+
+                        curPos[3][0] = curPos[2][0] + 1;
+                        curPos[3][1] = curPos[2][1] + 1;
+
+                        curPos[2][0] = curPos[1][0] + 1;
+                        curPos[2][1] = curPos[1][1];
+
+                        rotState = 1;
+                }
+                else if (rotState == 1) {
+                        cclearxy(curPos[0][0], curPos[0][1], 1);
+                        cclearxy(curPos[3][0], curPos[3][1], 1);
+
+                        curPos[0][0] = curPos[1][0] - 1;
+                        curPos[0][1] = curPos[1][1] + 1;
+
+                        curPos[2][0] = curPos[1][0];
+                        curPos[2][1] = curPos[1][1];
+
+                        curPos[3][0] = curPos[1][0] + 1;
+                        curPos[3][1] = curPos[1][1];
+
+                        curPos[1][0] = curPos[2][0];
+                        curPos[1][1] = curPos[2][1] + 1;
+
+                        rotState = 0;
+                }
+        }
+
+        else if (curTet == 4) { // Z-piece
+                if (rotState == 0) {
+                        cclearxy(curPos[0][0], curPos[0][1], 1);
+                        cclearxy(curPos[1][0], curPos[1][1], 1);
+
+                        curPos[0][0] = curPos[1][0] + 1;
+                        curPos[0][1] = curPos[1][1] - 1;
+
+                        curPos[2][0] = curPos[1][0];
+                        curPos[2][1] = curPos[1][1];
+
+                        curPos[3][0] = curPos[1][0];
+                        curPos[3][1] = curPos[1][1] + 1;
+
+                        curPos[1][0] = curPos[2][0] + 1;
+                        curPos[1][1] = curPos[2][1];
+
+                        rotState = 1;
+                }
+                else if (rotState == 1) {
+                        cclearxy(curPos[0][0], curPos[0][1], 1);
+                        cclearxy(curPos[1][0], curPos[1][1], 1);
+
+                        curPos[0][0] = curPos[2][0] - 1;
+                        curPos[0][1] = curPos[2][1];
+
+                        curPos[1][0] = curPos[2][0];
+                        curPos[1][1] = curPos[2][1];
+
+                        curPos[3][0] = curPos[2][0] + 1;
+                        curPos[3][1] = curPos[2][1] + 1;
+
+                        curPos[2][0] = curPos[2][0];
+                        curPos[2][1] = curPos[2][1] + 1;
+
+                        rotState = 0;
+                }
+
+        }
+
+        else if (curTet == 5) { // J-piece
+                cclearxy(curPos[0][0], curPos[0][1], 1);
+                cclearxy(curPos[2][0], curPos[2][1], 1);
+                cclearxy(curPos[3][0], curPos[3][1], 1);
+
+                if (rotState == 0) {
+                        curPos[0][0] = curPos[1][0];
+                        curPos[0][1] = curPos[1][1] - 1;
+
+                        curPos[2][0] = curPos[1][0];
+                        curPos[2][1] = curPos[1][1] + 1;
+
+                        curPos[3][0] = curPos[1][0] - 1;
+                        curPos[3][1] = curPos[1][1] + 1;
+
+                        rotState = 1;
+                }
+
+                else if (rotState == 1) {
+                        curPos[0][0] = curPos[1][0] + 1;
+                        curPos[0][1] = curPos[1][1];
+
+                        curPos[2][0] = curPos[1][0] - 1;
+                        curPos[2][1] = curPos[1][1];
+
+                        curPos[3][0] = curPos[1][0] - 1;
+                        curPos[3][1] = curPos[1][1] - 1;
+
+                        rotState = 2;
+                }
+
+                else if (rotState == 2) {
+                        curPos[0][0] = curPos[1][0];
+                        curPos[0][1] = curPos[1][1] + 1;
+
+                        curPos[2][0] = curPos[1][0];
+                        curPos[2][1] = curPos[1][1] - 1;
+
+                        curPos[3][0] = curPos[1][0] + 1;
+                        curPos[3][1] = curPos[1][1] - 1;
+
+                        rotState = 3;
+                }
+
+                else if (rotState == 3) {
+                        curPos[0][0] = curPos[1][0] - 1;
+                        curPos[0][1] = curPos[1][1];
+
+                        curPos[2][0] = curPos[1][0] + 1;
+                        curPos[2][1] = curPos[1][1];
+
+                        curPos[3][0] = curPos[1][0] + 1;
+                        curPos[3][1] = curPos[1][1] + 1;
+
+                        rotState = 0;
+                }
+        }
+
+        else if (curTet == 6) { // L-piece      
+                cclearxy(curPos[0][0], curPos[0][1], 1);
+                cclearxy(curPos[2][0], curPos[2][1], 1);
+                cclearxy(curPos[3][0], curPos[3][1], 1);
+
+                if (rotState == 0) {
+                        curPos[0][0] = curPos[1][0];
+                        curPos[0][1] = curPos[1][1] - 1;
+
+                        curPos[2][0] = curPos[1][0];
+                        curPos[2][1] = curPos[1][1] + 1;
+
+                        curPos[3][0] = curPos[1][0] - 1;
+                        curPos[3][1] = curPos[1][1] - 1;
+
+                        rotState = 1;
+                }
+
+                else if (rotState == 1) {
+                        curPos[0][0] = curPos[1][0] + 1;
+                        curPos[0][1] = curPos[1][1];
+
+                        curPos[2][0] = curPos[1][0] - 1;
+                        curPos[2][1] = curPos[1][1];
+
+                        curPos[3][0] = curPos[1][0] + 1;
+                        curPos[3][1] = curPos[1][1] - 1;
+
+                        rotState = 2;
+                }
+
+                else if (rotState == 2) {
+                        curPos[0][0] = curPos[1][0];
+                        curPos[0][1] = curPos[1][1] + 1;
+
+                        curPos[2][0] = curPos[1][0];
+                        curPos[2][1] = curPos[1][1] - 1;
+
+                        curPos[3][0] = curPos[1][0] + 1;
+                        curPos[3][1] = curPos[1][1] + 1;
+
+                        rotState = 3;
+                }
+
+                else if (rotState == 3) {
+                        curPos[0][0] = curPos[1][0] - 1;
+                        curPos[0][1] = curPos[1][1];
+
+                        curPos[2][0] = curPos[1][0] + 1;
+                        curPos[2][1] = curPos[1][1];
+
+                        curPos[3][0] = curPos[1][0] - 1;
+                        curPos[3][1] = curPos[1][1] + 1;
+
+                        rotState = 0;
+                }
+        }
+
+        i = 0;
+        textcolor(curColor);
+        while (i < 4) {
+                cputcxy(curPos[i][0], curPos[i][1], blockTile);
+                ++i;
+        }
+        return; 
+}
+
 static void checkMove() {
         if (kbhit() != 1) { 
                 return;
@@ -529,15 +1076,16 @@ static void checkMove() {
         }
 
         if (dirKey == 's') {
-                if (checkBotCollision() == 0) {
+                if (checkBotCollision() == 0 && isPlaced == 0) {
                         moveTet(0);
                 }
         }
-}
 
-static void checkRot() {
-        if (!kbhit()) {
-                return;
+
+        if (dirKey == 'w') {
+                if (checkRotateCollision(0) == 0) {
+                        rotClockwise();
+                }
         }
 }
 
@@ -555,7 +1103,6 @@ static void game_loop() {
                 }
 
                 checkMove();
-                checkRot();
                 handleTet();
 
 

@@ -150,8 +150,8 @@ _dirKey:
 	jsr     _clrscr
 	lda     #$01
 	sta     _i
-	jmp     L0310
-L030F:	lda     _i
+	jmp     L0997
+L0996:	lda     _i
 	clc
 	adc     #$05
 	jsr     pusha
@@ -160,13 +160,13 @@ L030F:	lda     _i
 	lda     #$EF
 	jsr     _cputcxy
 	inc     _i
-L0310:	lda     _i
+L0997:	lda     _i
 	cmp     #$0B
-	bcc     L030F
+	bcc     L0996
 	lda     #$01
 	sta     _i
-	jmp     L0312
-L0311:	lda     _i
+	jmp     L0999
+L0998:	lda     _i
 	clc
 	adc     #$05
 	jsr     pusha
@@ -175,12 +175,12 @@ L0311:	lda     _i
 	lda     #$F7
 	jsr     _cputcxy
 	inc     _i
-L0312:	lda     _i
+L0999:	lda     _i
 	cmp     #$0B
-	bcc     L0311
+	bcc     L0998
 	lda     #$01
 	sta     _i
-	jmp     L0313
+	jmp     L099A
 L0043:	lda     #$05
 	jsr     pusha
 	lda     _i
@@ -190,12 +190,12 @@ L0043:	lda     #$05
 	lda     #$EA
 	jsr     _cputcxy
 	inc     _i
-L0313:	lda     _i
+L099A:	lda     _i
 	cmp     #$15
 	bcc     L0043
 	lda     #$01
 	sta     _i
-	jmp     L0314
+	jmp     L099B
 L004E:	lda     #$10
 	jsr     pusha
 	lda     _i
@@ -205,14 +205,14 @@ L004E:	lda     #$10
 	lda     #$F4
 	jsr     _cputcxy
 	inc     _i
-L0314:	lda     _i
+L099B:	lda     _i
 	cmp     #$15
 	bcc     L004E
 	lda     #$03
 	sta     _j
 	lda     #$07
 	sta     _i
-	jmp     L0316
+	jmp     L099D
 L005F:	lda     _i
 	jsr     pusha
 	lda     _j
@@ -220,13 +220,13 @@ L005F:	lda     _i
 	lda     #$20
 	jsr     _cputcxy
 	inc     _j
-L0315:	lda     _j
+L099C:	lda     _j
 	cmp     #$17
 	bcc     L005F
 	inc     _i
-L0316:	lda     _i
+L099D:	lda     _i
 	cmp     #$0F
-	bcc     L0315
+	bcc     L099C
 	rts
 
 .endproc
@@ -251,9 +251,8 @@ L0316:	lda     _i
 	jsr     _cpeekc
 	cmp     #$20
 	beq     L006D
-	lda     #$01
-	sta     _isGameOver
 	ldx     #$00
+	lda     #$01
 	jmp     incsp2
 L006D:	ldx     #$00
 	txa
@@ -272,7 +271,7 @@ L006D:	ldx     #$00
 .segment	"CODE"
 
 	lda     _curTet
-	bne     L031D
+	bne     L09A4
 	lda     #$0E
 	sta     _curColor
 	lda     #$09
@@ -295,9 +294,9 @@ L006D:	ldx     #$00
 	sta     _xTet
 	lda     #$04
 	sta     _yTet
-L031D:	lda     _curTet
+L09A4:	lda     _curTet
 	cmp     #$01
-	bne     L031E
+	bne     L09A5
 	lda     #$07
 	sta     _curColor
 	lda     #$0A
@@ -320,9 +319,9 @@ L031D:	lda     _curTet
 	sta     _xTet
 	lda     #$04
 	sta     _yTet
-L031E:	lda     _curTet
+L09A5:	lda     _curTet
 	cmp     #$02
-	bne     L031F
+	bne     L09A6
 	lda     #$04
 	sta     _curColor
 	lda     _initPlacement
@@ -351,9 +350,9 @@ L031E:	lda     _curTet
 	sta     _xTet
 	lda     #$04
 	sta     _yTet
-L031F:	lda     _curTet
+L09A6:	lda     _curTet
 	cmp     #$03
-	bne     L0320
+	bne     L09A7
 	lda     #$05
 	sta     _curColor
 	lda     _initPlacement
@@ -382,9 +381,9 @@ L031F:	lda     _curTet
 	sta     _xTet
 	lda     #$04
 	sta     _yTet
-L0320:	lda     _curTet
+L09A7:	lda     _curTet
 	cmp     #$04
-	bne     L0321
+	bne     L09A8
 	lda     #$02
 	sta     _curColor
 	lda     _initPlacement
@@ -413,9 +412,9 @@ L0320:	lda     _curTet
 	sta     _xTet
 	lda     #$04
 	sta     _yTet
-L0321:	lda     _curTet
+L09A8:	lda     _curTet
 	cmp     #$05
-	bne     L0322
+	bne     L09A9
 	lda     #$08
 	sta     _curColor
 	lda     _initPlacement
@@ -423,14 +422,16 @@ L0321:	lda     _curTet
 	lda     #$03
 	sta     _curPos+1
 	lda     _initPlacement
+	clc
+	adc     #$01
 	sta     _curPos+2
-	lda     #$04
+	lda     #$03
 	sta     _curPos+3
 	lda     _initPlacement
 	clc
-	adc     #$01
+	adc     #$02
 	sta     _curPos+4
-	lda     #$04
+	lda     #$03
 	sta     _curPos+5
 	lda     _initPlacement
 	clc
@@ -442,27 +443,27 @@ L0321:	lda     _curTet
 	sta     _xTet
 	lda     #$04
 	sta     _yTet
-L0322:	lda     _curTet
+L09A9:	lda     _curTet
 	cmp     #$06
-	bne     L0323
+	bne     L09AA
 	sta     _curColor
 	lda     _initPlacement
 	sta     _curPos
 	lda     #$03
 	sta     _curPos+1
 	lda     _initPlacement
+	clc
+	adc     #$01
 	sta     _curPos+2
-	lda     #$04
+	lda     #$03
 	sta     _curPos+3
 	lda     _initPlacement
 	clc
-	adc     #$01
+	adc     #$02
 	sta     _curPos+4
-	lda     #$04
+	lda     #$03
 	sta     _curPos+5
 	lda     _initPlacement
-	clc
-	adc     #$02
 	sta     _curPos+6
 	lda     #$04
 	sta     _curPos+7
@@ -470,16 +471,16 @@ L0322:	lda     _curTet
 	sta     _xTet
 	lda     #$04
 	sta     _yTet
-L0323:	lda     #$00
+L09AA:	lda     #$00
 	sta     _rotState
 	tax
 	sta     _i
-	jmp     L0325
-L0324:	lda     _i
+	jmp     L09AC
+L09AB:	lda     _i
 	asl     a
-	bcc     L0317
+	bcc     L099E
 	ldx     #$01
-L0317:	sta     ptr1
+L099E:	sta     ptr1
 	txa
 	clc
 	adc     #>(_curPos)
@@ -490,10 +491,10 @@ L0317:	sta     ptr1
 	ldx     #$00
 	lda     _i
 	asl     a
-	bcc     L031B
+	bcc     L09A2
 	inx
 	clc
-L031B:	adc     #<(_curPos)
+L09A2:	adc     #<(_curPos)
 	sta     ptr1
 	txa
 	adc     #>(_curPos)
@@ -502,21 +503,23 @@ L031B:	adc     #<(_curPos)
 	lda     (ptr1),y
 	jsr     _checkIfEmpty
 	cmp     #$01
-	beq     L01A2
-	inc     _i
+	bne     L0192
+	sta     _isGameOver
+	rts
+L0192:	inc     _i
 	ldx     #$00
-L0325:	lda     _i
+L09AC:	lda     _i
 	cmp     #$04
-	bcc     L0324
+	bcc     L09AB
 	stx     _i
 	lda     _curColor
 	jsr     _textcolor
 	jmp     L01A3
-L0326:	lda     _i
+L09AD:	lda     _i
 	asl     a
-	bcc     L0319
+	bcc     L09A0
 	ldx     #$01
-L0319:	sta     ptr1
+L09A0:	sta     ptr1
 	txa
 	clc
 	adc     #>(_curPos)
@@ -527,10 +530,10 @@ L0319:	sta     ptr1
 	ldx     #$00
 	lda     _i
 	asl     a
-	bcc     L031C
+	bcc     L09A3
 	inx
 	clc
-L031C:	adc     #<(_curPos)
+L09A3:	adc     #<(_curPos)
 	sta     ptr1
 	txa
 	adc     #>(_curPos)
@@ -544,8 +547,8 @@ L031C:	adc     #<(_curPos)
 L01A3:	ldx     #$00
 	lda     _i
 	cmp     #$04
-	bcc     L0326
-L01A2:	rts
+	bcc     L09AD
+	rts
 
 .endproc
 
@@ -592,13 +595,13 @@ L01A2:	rts
 	jsr     pusha
 	tax
 	sta     _i
-	jmp     L0333
-L0331:	lda     _i
+	jmp     L09BA
+L09B8:	lda     _i
 	asl     a
-	bcc     L032D
+	bcc     L09B4
 	ldx     #$01
 	clc
-L032D:	adc     #<(_curPos)
+L09B4:	adc     #<(_curPos)
 	sta     ptr1
 	txa
 	adc     #>(_curPos)
@@ -609,14 +612,14 @@ L032D:	adc     #<(_curPos)
 	sec
 	dey
 	sbc     (sp),y
-	bcc     L0332
-	beq     L0332
+	bcc     L09B9
+	beq     L09B9
 	lda     _i
 	asl     a
-	bcc     L032E
+	bcc     L09B5
 	inx
 	clc
-L032E:	adc     #<(_curPos)
+L09B5:	adc     #<(_curPos)
 	sta     ptr1
 	txa
 	adc     #>(_curPos)
@@ -625,19 +628,19 @@ L032E:	adc     #<(_curPos)
 	lda     (ptr1),y
 	dey
 	sta     (sp),y
-L0332:	inc     _i
+L09B9:	inc     _i
 	ldx     #$00
-L0333:	lda     _i
+L09BA:	lda     _i
 	cmp     #$04
-	bcc     L0331
+	bcc     L09B8
 	stx     _i
-	jmp     L0336
-L0334:	lda     _i
+	jmp     L09BD
+L09BB:	lda     _i
 	asl     a
-	bcc     L032F
+	bcc     L09B6
 	ldx     #$01
 	clc
-L032F:	adc     #<(_curPos)
+L09B6:	adc     #<(_curPos)
 	sta     ptr1
 	txa
 	adc     #>(_curPos)
@@ -650,9 +653,9 @@ L032F:	adc     #<(_curPos)
 	bcc     L01D8
 	lda     _i
 	asl     a
-	bcc     L032A
+	bcc     L09B1
 	inx
-L032A:	sta     ptr1
+L09B1:	sta     ptr1
 	txa
 	clc
 	adc     #>(_curPos)
@@ -663,10 +666,10 @@ L032A:	sta     ptr1
 	ldx     #$00
 	lda     _i
 	asl     a
-	bcc     L0330
+	bcc     L09B7
 	inx
 	clc
-L0330:	adc     #<(_curPos)
+L09B7:	adc     #<(_curPos)
 	sta     ptr1
 	txa
 	adc     #>(_curPos)
@@ -684,9 +687,9 @@ L0330:	adc     #<(_curPos)
 	jmp     incsp1
 L01D8:	inc     _i
 	ldx     #$00
-L0336:	lda     _i
+L09BD:	lda     _i
 	cmp     #$04
-	bcc     L0334
+	bcc     L09BB
 	txa
 	jmp     incsp1
 
@@ -705,17 +708,17 @@ L0336:	lda     _i
 	jsr     pusha
 	ldy     #$00
 	lda     (sp),y
-	jne     L0358
+	jne     L09DF
 	sta     _i
-	jmp     L0353
+	jmp     L09DA
 L01E2:	lda     #$00
 	jsr     _textcolor
 	ldx     #$00
 	lda     _i
 	asl     a
-	bcc     L0337
+	bcc     L09BE
 	inx
-L0337:	sta     ptr1
+L09BE:	sta     ptr1
 	txa
 	clc
 	adc     #>(_curPos)
@@ -726,10 +729,10 @@ L0337:	sta     ptr1
 	ldx     #$00
 	lda     _i
 	asl     a
-	bcc     L0349
+	bcc     L09D0
 	inx
 	clc
-L0349:	adc     #<(_curPos)
+L09D0:	adc     #<(_curPos)
 	sta     ptr1
 	txa
 	adc     #>(_curPos)
@@ -740,18 +743,18 @@ L0349:	adc     #<(_curPos)
 	lda     #$01
 	jsr     _cclearxy
 	inc     _i
-L0353:	lda     _i
+L09DA:	lda     _i
 	cmp     #$04
 	bcc     L01E2
 	ldx     #$00
 	stx     _i
-	jmp     L0355
-L0354:	lda     _i
+	jmp     L09DC
+L09DB:	lda     _i
 	asl     a
-	bcc     L034A
+	bcc     L09D1
 	ldx     #$01
 	clc
-L034A:	adc     #<(_curPos)
+L09D1:	adc     #<(_curPos)
 	sta     ptr1
 	txa
 	adc     #>(_curPos)
@@ -762,10 +765,10 @@ L034A:	adc     #<(_curPos)
 	ldx     #$00
 	lda     _i
 	asl     a
-	bcc     L034B
+	bcc     L09D2
 	inx
 	clc
-L034B:	adc     #<(_curPos)
+L09D2:	adc     #<(_curPos)
 	sta     ptr1
 	txa
 	adc     #>(_curPos)
@@ -779,18 +782,18 @@ L034B:	adc     #<(_curPos)
 	inc     _i
 	jsr     incsp1
 	ldx     #$00
-L0355:	lda     _i
+L09DC:	lda     _i
 	cmp     #$04
-	bcc     L0354
+	bcc     L09DB
 	stx     _i
 	lda     _curColor
 	jsr     _textcolor
 	jmp     L0205
-L0356:	lda     _i
+L09DD:	lda     _i
 	asl     a
-	bcc     L033B
+	bcc     L09C2
 	ldx     #$01
-L033B:	sta     ptr1
+L09C2:	sta     ptr1
 	txa
 	clc
 	adc     #>(_curPos)
@@ -801,10 +804,10 @@ L033B:	sta     ptr1
 	ldx     #$00
 	lda     _i
 	asl     a
-	bcc     L034C
+	bcc     L09D3
 	inx
 	clc
-L034C:	adc     #<(_curPos)
+L09D3:	adc     #<(_curPos)
 	sta     ptr1
 	txa
 	adc     #>(_curPos)
@@ -818,21 +821,21 @@ L034C:	adc     #<(_curPos)
 L0205:	ldx     #$00
 	lda     _i
 	cmp     #$04
-	bcc     L0356
+	bcc     L09DD
 	ldy     #$00
-L0358:	lda     (sp),y
+L09DF:	lda     (sp),y
 	cmp     #$01
-	jne     L035E
+	jne     L09E5
 	sty     _i
-	jmp     L0359
+	jmp     L09E0
 L0214:	lda     #$00
 	jsr     _textcolor
 	ldx     #$00
 	lda     _i
 	asl     a
-	bcc     L033D
+	bcc     L09C4
 	inx
-L033D:	sta     ptr1
+L09C4:	sta     ptr1
 	txa
 	clc
 	adc     #>(_curPos)
@@ -843,10 +846,10 @@ L033D:	sta     ptr1
 	ldx     #$00
 	lda     _i
 	asl     a
-	bcc     L034D
+	bcc     L09D4
 	inx
 	clc
-L034D:	adc     #<(_curPos)
+L09D4:	adc     #<(_curPos)
 	sta     ptr1
 	txa
 	adc     #>(_curPos)
@@ -857,17 +860,17 @@ L034D:	adc     #<(_curPos)
 	lda     #$01
 	jsr     _cclearxy
 	inc     _i
-L0359:	lda     _i
+L09E0:	lda     _i
 	cmp     #$04
 	bcc     L0214
 	ldx     #$00
 	stx     _i
-	jmp     L035B
-L035A:	lda     _i
+	jmp     L09E2
+L09E1:	lda     _i
 	asl     a
-	bcc     L033F
+	bcc     L09C6
 	ldx     #$01
-L033F:	sta     ptr1
+L09C6:	sta     ptr1
 	txa
 	clc
 	adc     #>(_curPos)
@@ -878,10 +881,10 @@ L033F:	sta     ptr1
 	ldx     #$00
 	lda     _i
 	asl     a
-	bcc     L034E
+	bcc     L09D5
 	inx
 	clc
-L034E:	adc     #<(_curPos)
+L09D5:	adc     #<(_curPos)
 	sta     ptr1
 	txa
 	adc     #>(_curPos)
@@ -894,18 +897,18 @@ L034E:	adc     #<(_curPos)
 	inc     _i
 	jsr     incsp1
 	ldx     #$00
-L035B:	lda     _i
+L09E2:	lda     _i
 	cmp     #$04
-	bcc     L035A
+	bcc     L09E1
 	stx     _i
 	lda     _curColor
 	jsr     _textcolor
 	jmp     L0237
-L035C:	lda     _i
+L09E3:	lda     _i
 	asl     a
-	bcc     L0341
+	bcc     L09C8
 	ldx     #$01
-L0341:	sta     ptr1
+L09C8:	sta     ptr1
 	txa
 	clc
 	adc     #>(_curPos)
@@ -916,10 +919,10 @@ L0341:	sta     ptr1
 	ldx     #$00
 	lda     _i
 	asl     a
-	bcc     L034F
+	bcc     L09D6
 	inx
 	clc
-L034F:	adc     #<(_curPos)
+L09D6:	adc     #<(_curPos)
 	sta     ptr1
 	txa
 	adc     #>(_curPos)
@@ -933,22 +936,22 @@ L034F:	adc     #<(_curPos)
 L0237:	ldx     #$00
 	lda     _i
 	cmp     #$04
-	bcc     L035C
+	bcc     L09E3
 	ldy     #$00
-L035E:	lda     (sp),y
+L09E5:	lda     (sp),y
 	cmp     #$02
-	beq     L0363
+	beq     L09EA
 	jmp     incsp1
-L0363:	sty     _i
-	jmp     L035F
+L09EA:	sty     _i
+	jmp     L09E6
 L0246:	lda     #$00
 	jsr     _textcolor
 	ldx     #$00
 	lda     _i
 	asl     a
-	bcc     L0343
+	bcc     L09CA
 	inx
-L0343:	sta     ptr1
+L09CA:	sta     ptr1
 	txa
 	clc
 	adc     #>(_curPos)
@@ -959,10 +962,10 @@ L0343:	sta     ptr1
 	ldx     #$00
 	lda     _i
 	asl     a
-	bcc     L0350
+	bcc     L09D7
 	inx
 	clc
-L0350:	adc     #<(_curPos)
+L09D7:	adc     #<(_curPos)
 	sta     ptr1
 	txa
 	adc     #>(_curPos)
@@ -973,17 +976,17 @@ L0350:	adc     #<(_curPos)
 	lda     #$01
 	jsr     _cclearxy
 	inc     _i
-L035F:	lda     _i
+L09E6:	lda     _i
 	cmp     #$04
 	bcc     L0246
 	ldx     #$00
 	stx     _i
-	jmp     L0361
-L0360:	lda     _i
+	jmp     L09E8
+L09E7:	lda     _i
 	asl     a
-	bcc     L0345
+	bcc     L09CC
 	ldx     #$01
-L0345:	sta     ptr1
+L09CC:	sta     ptr1
 	txa
 	clc
 	adc     #>(_curPos)
@@ -994,10 +997,10 @@ L0345:	sta     ptr1
 	ldx     #$00
 	lda     _i
 	asl     a
-	bcc     L0351
+	bcc     L09D8
 	inx
 	clc
-L0351:	adc     #<(_curPos)
+L09D8:	adc     #<(_curPos)
 	sta     ptr1
 	txa
 	adc     #>(_curPos)
@@ -1010,18 +1013,18 @@ L0351:	adc     #<(_curPos)
 	inc     _i
 	jsr     incsp1
 	ldx     #$00
-L0361:	lda     _i
+L09E8:	lda     _i
 	cmp     #$04
-	bcc     L0360
+	bcc     L09E7
 	stx     _i
 	lda     _curColor
 	jsr     _textcolor
 	jmp     L0269
-L0362:	lda     _i
+L09E9:	lda     _i
 	asl     a
-	bcc     L0347
+	bcc     L09CE
 	ldx     #$01
-L0347:	sta     ptr1
+L09CE:	sta     ptr1
 	txa
 	clc
 	adc     #>(_curPos)
@@ -1032,10 +1035,10 @@ L0347:	sta     ptr1
 	ldx     #$00
 	lda     _i
 	asl     a
-	bcc     L0352
+	bcc     L09D9
 	inx
 	clc
-L0352:	adc     #<(_curPos)
+L09D9:	adc     #<(_curPos)
 	sta     ptr1
 	txa
 	adc     #>(_curPos)
@@ -1049,7 +1052,7 @@ L0352:	adc     #<(_curPos)
 L0269:	ldx     #$00
 	lda     _i
 	cmp     #$04
-	bcc     L0362
+	bcc     L09E9
 	jmp     incsp1
 
 .endproc
@@ -1088,12 +1091,12 @@ L0275:	lda     #$00
 	jsr     pusha
 	ldx     #$00
 	stx     _i
-	jmp     L036D
-L036B:	lda     _i
+	jmp     L09F4
+L09F2:	lda     _i
 	asl     a
-	bcc     L0364
+	bcc     L09EB
 	ldx     #$01
-L0364:	sta     ptr1
+L09EB:	sta     ptr1
 	txa
 	clc
 	adc     #>(_curPos)
@@ -1103,12 +1106,12 @@ L0364:	sta     ptr1
 	lda     (ptr1),y
 	ldy     #$00
 	cmp     (sp),y
-	bcs     L036C
+	bcs     L09F3
 	lda     _i
 	asl     a
-	bcc     L0365
+	bcc     L09EC
 	inx
-L0365:	sta     ptr1
+L09EC:	sta     ptr1
 	txa
 	clc
 	adc     #>(_curPos)
@@ -1117,18 +1120,18 @@ L0365:	sta     ptr1
 	lda     (ptr1),y
 	ldy     #$00
 	sta     (sp),y
-L036C:	inc     _i
+L09F3:	inc     _i
 	ldx     #$00
-L036D:	lda     _i
+L09F4:	lda     _i
 	cmp     #$04
-	bcc     L036B
+	bcc     L09F2
 	stx     _i
-	jmp     L0370
-L036E:	lda     _i
+	jmp     L09F7
+L09F5:	lda     _i
 	asl     a
-	bcc     L0366
+	bcc     L09ED
 	ldx     #$01
-L0366:	sta     ptr1
+L09ED:	sta     ptr1
 	txa
 	clc
 	adc     #>(_curPos)
@@ -1139,13 +1142,13 @@ L0366:	sta     ptr1
 	sec
 	ldy     #$00
 	sbc     (sp),y
-	bcc     L036F
+	bcc     L09F6
 	bne     L029F
-L036F:	lda     _i
+L09F6:	lda     _i
 	asl     a
-	bcc     L0367
+	bcc     L09EE
 	inx
-L0367:	sta     ptr1
+L09EE:	sta     ptr1
 	txa
 	clc
 	adc     #>(_curPos)
@@ -1158,10 +1161,10 @@ L0367:	sta     ptr1
 	ldx     #$00
 	lda     _i
 	asl     a
-	bcc     L036A
+	bcc     L09F1
 	inx
 	clc
-L036A:	adc     #<(_curPos)
+L09F1:	adc     #<(_curPos)
 	sta     ptr1
 	txa
 	adc     #>(_curPos)
@@ -1177,9 +1180,9 @@ L036A:	adc     #<(_curPos)
 	jmp     incsp1
 L029F:	inc     _i
 	ldx     #$00
-L0370:	lda     _i
+L09F7:	lda     _i
 	cmp     #$04
-	bcc     L036E
+	bcc     L09F5
 	txa
 	jmp     incsp1
 
@@ -1199,12 +1202,12 @@ L0370:	lda     _i
 	jsr     pusha
 	tax
 	sta     _i
-	jmp     L037A
-L0378:	lda     _i
+	jmp     L0A01
+L09FF:	lda     _i
 	asl     a
-	bcc     L0371
+	bcc     L09F8
 	ldx     #$01
-L0371:	sta     ptr1
+L09F8:	sta     ptr1
 	txa
 	clc
 	adc     #>(_curPos)
@@ -1215,13 +1218,13 @@ L0371:	sta     ptr1
 	sec
 	ldy     #$00
 	sbc     (sp),y
-	bcc     L0379
-	beq     L0379
+	bcc     L0A00
+	beq     L0A00
 	lda     _i
 	asl     a
-	bcc     L0372
+	bcc     L09F9
 	inx
-L0372:	sta     ptr1
+L09F9:	sta     ptr1
 	txa
 	clc
 	adc     #>(_curPos)
@@ -1230,18 +1233,18 @@ L0372:	sta     ptr1
 	lda     (ptr1),y
 	ldy     #$00
 	sta     (sp),y
-L0379:	inc     _i
+L0A00:	inc     _i
 	ldx     #$00
-L037A:	lda     _i
+L0A01:	lda     _i
 	cmp     #$04
-	bcc     L0378
+	bcc     L09FF
 	stx     _i
-	jmp     L037D
-L037B:	lda     _i
+	jmp     L0A04
+L0A02:	lda     _i
 	asl     a
-	bcc     L0373
+	bcc     L09FA
 	ldx     #$01
-L0373:	sta     ptr1
+L09FA:	sta     ptr1
 	txa
 	clc
 	adc     #>(_curPos)
@@ -1254,9 +1257,9 @@ L0373:	sta     ptr1
 	bcc     L02C7
 	lda     _i
 	asl     a
-	bcc     L0374
+	bcc     L09FB
 	inx
-L0374:	sta     ptr1
+L09FB:	sta     ptr1
 	txa
 	clc
 	adc     #>(_curPos)
@@ -1269,10 +1272,10 @@ L0374:	sta     ptr1
 	ldx     #$00
 	lda     _i
 	asl     a
-	bcc     L0377
+	bcc     L09FE
 	inx
 	clc
-L0377:	adc     #<(_curPos)
+L09FE:	adc     #<(_curPos)
 	sta     ptr1
 	txa
 	adc     #>(_curPos)
@@ -1288,11 +1291,1580 @@ L0377:	adc     #<(_curPos)
 	jmp     incsp1
 L02C7:	inc     _i
 	ldx     #$00
-L037D:	lda     _i
+L0A04:	lda     _i
 	cmp     #$04
-	bcc     L037B
+	bcc     L0A02
 	txa
 	jmp     incsp1
+
+.endproc
+
+; ---------------------------------------------------------------
+; unsigned char __near__ checkRotateCollision (unsigned char)
+; ---------------------------------------------------------------
+
+.segment	"CODE"
+
+.proc	_checkRotateCollision: near
+
+.segment	"CODE"
+
+	jsr     pusha
+	lda     #$00
+	jsr     pusha
+	tax
+	lda     _curTet
+	jne     L0A09
+	lda     _rotState
+	bne     L0A07
+	lda     _curPos+4
+	jsr     pusha
+	lda     _curPos+5
+	clc
+	adc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+4
+	jsr     pusha
+	lda     _curPos+5
+	sec
+	sbc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+4
+	jsr     pusha
+	lda     _curPos+5
+	sec
+	sbc     #$02
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	ldx     #$00
+	lda     (sp),y
+	bne     L0A31
+	jmp     incsp2
+L0A31:	lda     #$01
+	jmp     incsp2
+L0A07:	lda     _curPos+4
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     _curPos+5
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+4
+	sec
+	sbc     #$01
+	jsr     pusha
+	lda     _curPos+5
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+4
+	sec
+	sbc     #$02
+	jsr     pusha
+	lda     _curPos+5
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	ldx     #$00
+	lda     (sp),y
+	bne     L0A32
+	jmp     incsp2
+L0A32:	lda     #$01
+	jmp     incsp2
+L0A09:	lda     _curTet
+	cmp     #$02
+	jne     L0A0D
+	lda     _rotState
+	bne     L0A0A
+	lda     _curPos+2
+	jsr     pusha
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	jsr     _checkIfEmpty
+	cmp     #$00
+	beq     L030E
+	ldx     #$00
+	lda     #$01
+	jmp     incsp2
+L030E:	tax
+	jmp     incsp2
+L0A0A:	lda     _rotState
+	cmp     #$01
+	bne     L0A0B
+	lda     _curPos+2
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	jsr     _checkIfEmpty
+	cmp     #$00
+	beq     L031A
+	ldx     #$00
+	lda     #$01
+	jmp     incsp2
+L031A:	tax
+	jmp     incsp2
+L0A0B:	lda     _rotState
+	cmp     #$02
+	bne     L0A0C
+	lda     _curPos+2
+	jsr     pusha
+	lda     _curPos+3
+	clc
+	adc     #$01
+	jsr     _checkIfEmpty
+	cmp     #$00
+	beq     L0326
+	ldx     #$00
+	lda     #$01
+	jmp     incsp2
+L0326:	tax
+	jmp     incsp2
+L0A0C:	lda     _rotState
+	cmp     #$03
+	bne     L0A0D
+	lda     _curPos+2
+	sec
+	sbc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	jsr     _checkIfEmpty
+	cmp     #$00
+	beq     L0332
+	ldx     #$00
+	lda     #$01
+	jmp     incsp2
+L0332:	tax
+	jmp     incsp2
+L0A0D:	lda     _curTet
+	cmp     #$03
+	jne     L0A10
+	lda     _rotState
+	bne     L033E
+	lda     _curPos+4
+	jsr     pusha
+	lda     _curPos+5
+	sec
+	sbc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+4
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     _curPos+5
+	clc
+	adc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	ldx     #$00
+	lda     (sp),y
+	bne     L0A33
+	jmp     incsp2
+L0A33:	lda     #$01
+	jmp     incsp2
+L033E:	lda     _curPos+2
+	jsr     pusha
+	lda     _curPos+3
+	clc
+	adc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	sec
+	sbc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	clc
+	adc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	ldx     #$00
+	lda     (sp),y
+	bne     L0A34
+	jmp     incsp2
+L0A34:	lda     #$01
+	jmp     incsp2
+L0A10:	lda     _curTet
+	cmp     #$04
+	jne     L0A14
+	lda     _rotState
+	bne     L0A12
+	lda     _curPos+2
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	ldx     #$00
+	lda     (sp),y
+	bne     L0A35
+	jmp     incsp2
+L0A35:	lda     #$01
+	jmp     incsp2
+L0A12:	lda     _curPos+4
+	sec
+	sbc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+4
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     _curPos+5
+	clc
+	adc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	ldx     #$00
+	lda     (sp),y
+	bne     L0A36
+	jmp     incsp2
+L0A36:	lda     #$01
+	jmp     incsp2
+L0A14:	lda     _curTet
+	cmp     #$05
+	jne     L0A23
+	lda     _rotState
+	jne     L0A17
+	ldy     #$01
+	lda     (sp),y
+	bne     L0398
+	lda     _curPos+2
+	jsr     pusha
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	jsr     pusha
+	lda     _curPos+3
+	clc
+	adc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	sec
+	sbc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	clc
+	adc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	ldx     #$00
+	lda     (sp),y
+	bne     L0A37
+	jmp     incsp2
+L0A37:	lda     #$01
+	jmp     incsp2
+L0398:	lda     _curPos+2
+	jsr     pusha
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	jsr     pusha
+	lda     _curPos+3
+	clc
+	adc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	ldx     #$00
+	lda     (sp),y
+	bne     L0A38
+	jmp     incsp2
+L0A38:	lda     #$01
+	jmp     incsp2
+L0A17:	lda     _rotState
+	cmp     #$01
+	jne     L0A1B
+	tay
+	lda     (sp),y
+	bne     L0A19
+	lda     _curPos+2
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	sec
+	sbc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	ldx     #$00
+	lda     (sp),y
+	bne     L0A39
+	jmp     incsp2
+L0A39:	lda     #$01
+	jmp     incsp2
+L0A19:	lda     _curPos+2
+	sec
+	sbc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	clc
+	adc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	ldx     #$00
+	lda     (sp),y
+	bne     L0A3A
+	jmp     incsp2
+L0A3A:	lda     #$01
+	jmp     incsp2
+L0A1B:	lda     _rotState
+	cmp     #$02
+	jne     L0A1F
+	ldy     #$01
+	lda     (sp),y
+	bne     L0A1D
+	lda     _curPos+2
+	jsr     pusha
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	jsr     pusha
+	lda     _curPos+3
+	clc
+	adc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	ldx     #$00
+	lda     (sp),y
+	bne     L0A3B
+	jmp     incsp2
+L0A3B:	lda     #$01
+	jmp     incsp2
+L0A1D:	lda     _curPos+2
+	sec
+	sbc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	sec
+	sbc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	clc
+	adc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	ldx     #$00
+	lda     (sp),y
+	bne     L0A3C
+	jmp     incsp2
+L0A3C:	lda     #$01
+	jmp     incsp2
+L0A1F:	lda     _rotState
+	cmp     #$03
+	jne     L0A23
+	ldy     #$01
+	lda     (sp),y
+	bne     L0A21
+	lda     _curPos+2
+	sec
+	sbc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	clc
+	adc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	ldx     #$00
+	lda     (sp),y
+	bne     L0A3D
+	jmp     incsp2
+L0A3D:	lda     #$01
+	jmp     incsp2
+L0A21:	lda     _curPos+2
+	sec
+	sbc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	sec
+	sbc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	ldx     #$00
+	lda     (sp),y
+	bne     L0A3E
+	jmp     incsp2
+L0A3E:	lda     #$01
+	jmp     incsp2
+L0A23:	lda     _curTet
+	cmp     #$06
+	beq     L0A3F
+	jmp     incsp2
+L0A3F:	lda     _rotState
+	jne     L0A26
+	ldy     #$01
+	lda     (sp),y
+	bne     L048A
+	lda     _curPos+2
+	jsr     pusha
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	jsr     pusha
+	lda     _curPos+3
+	clc
+	adc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	sec
+	sbc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	ldx     #$00
+	lda     (sp),y
+	bne     L0A40
+	jmp     incsp2
+L0A40:	lda     #$01
+	jmp     incsp2
+L048A:	lda     _curPos+2
+	jsr     pusha
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	jsr     pusha
+	lda     _curPos+3
+	clc
+	adc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	clc
+	adc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	ldx     #$00
+	lda     (sp),y
+	bne     L0A41
+	jmp     incsp2
+L0A41:	lda     #$01
+	jmp     incsp2
+L0A26:	lda     _rotState
+	cmp     #$01
+	jne     L0A2A
+	tay
+	lda     (sp),y
+	bne     L0A28
+	lda     _curPos+2
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	sec
+	sbc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	ldx     #$00
+	lda     (sp),y
+	bne     L0A42
+	jmp     incsp2
+L0A42:	lda     #$01
+	jmp     incsp2
+L0A28:	lda     _curPos+2
+	sec
+	sbc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	ldx     #$00
+	lda     (sp),y
+	bne     L0A43
+	jmp     incsp2
+L0A43:	lda     #$01
+	jmp     incsp2
+L0A2A:	lda     _rotState
+	cmp     #$02
+	jne     L0A2E
+	ldy     #$01
+	lda     (sp),y
+	bne     L0A2C
+	lda     _curPos+2
+	jsr     pusha
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	jsr     pusha
+	lda     _curPos+3
+	clc
+	adc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	clc
+	adc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	ldx     #$00
+	lda     (sp),y
+	bne     L0A44
+	jmp     incsp2
+L0A44:	lda     #$01
+	jmp     incsp2
+L0A2C:	lda     _curPos+2
+	sec
+	sbc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	sec
+	sbc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	ldx     #$00
+	lda     (sp),y
+	bne     L0A45
+	jmp     incsp2
+L0A45:	lda     #$01
+	jmp     incsp2
+L0A2E:	lda     _rotState
+	cmp     #$03
+	beq     L0A46
+	jmp     incsp2
+L0A46:	ldy     #$01
+	lda     (sp),y
+	bne     L0A30
+	lda     _curPos+2
+	sec
+	sbc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	sec
+	sbc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	ldx     #$00
+	lda     (sp),y
+	beq     L053C
+	lda     #$01
+	jmp     incsp2
+L0A30:	lda     _curPos+2
+	sec
+	sbc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	lda     _curPos+2
+	clc
+	adc     #$01
+	jsr     pusha
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	jsr     _checkIfEmpty
+	ldy     #$00
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	ldx     #$00
+	lda     (sp),y
+	beq     L053C
+	lda     #$01
+	jmp     incsp2
+L053C:	jmp     incsp2
+
+.endproc
+
+; ---------------------------------------------------------------
+; void __near__ rotClockwise (void)
+; ---------------------------------------------------------------
+
+.segment	"CODE"
+
+.proc	_rotClockwise: near
+
+.segment	"CODE"
+
+	lda     _curTet
+	jne     L0A4C
+	lda     _curPos
+	jsr     pusha
+	lda     _curPos+1
+	jsr     pusha
+	lda     #$01
+	jsr     _cclearxy
+	lda     _curPos+2
+	jsr     pusha
+	lda     _curPos+3
+	jsr     pusha
+	lda     #$01
+	jsr     _cclearxy
+	lda     _curPos+6
+	jsr     pusha
+	lda     _curPos+7
+	jsr     pusha
+	lda     #$01
+	jsr     _cclearxy
+	lda     _rotState
+	bne     L0A4B
+	lda     _curPos+4
+	sta     _curPos
+	lda     _curPos+5
+	sec
+	sbc     #$02
+	sta     _curPos+1
+	lda     _curPos+4
+	sta     _curPos+2
+	lda     _curPos+5
+	sec
+	sbc     #$01
+	sta     _curPos+3
+	lda     _curPos+4
+	sta     _curPos+6
+	lda     _curPos+5
+	clc
+	adc     #$01
+	sta     _curPos+7
+	lda     #$01
+	jmp     L0A49
+L0A4B:	lda     _rotState
+	cmp     #$01
+	jne     L0A5C
+	lda     _curPos+4
+	sec
+	sbc     #$02
+	sta     _curPos
+	lda     _curPos+5
+	sta     _curPos+1
+	lda     _curPos+4
+	sec
+	sbc     #$01
+	sta     _curPos+2
+	lda     _curPos+5
+	sta     _curPos+3
+	lda     _curPos+4
+	clc
+	adc     #$01
+	sta     _curPos+6
+	lda     _curPos+5
+	jmp     L0A5F
+L0A4C:	lda     _curTet
+	cmp     #$02
+	jne     L0A50
+	lda     _rotState
+	bne     L0A4D
+	lda     _curPos+4
+	jsr     pusha
+	lda     _curPos+5
+	jsr     pusha
+	lda     #$01
+	jsr     _cclearxy
+	lda     _curPos+2
+	sta     _curPos
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	sta     _curPos+1
+	lda     _curPos+2
+	sec
+	sbc     #$01
+	sta     _curPos+4
+	lda     _curPos+3
+	sta     _curPos+5
+	lda     _curPos+2
+	sta     _curPos+6
+	lda     _curPos+3
+	clc
+	adc     #$01
+	sta     _curPos+7
+	lda     #$01
+	jmp     L0A49
+L0A4D:	lda     _rotState
+	cmp     #$01
+	bne     L0A4E
+	lda     _curPos+6
+	jsr     pusha
+	lda     _curPos+7
+	jsr     pusha
+	lda     #$01
+	jsr     _cclearxy
+	lda     _curPos+2
+	sec
+	sbc     #$01
+	sta     _curPos
+	lda     _curPos+3
+	sta     _curPos+1
+	lda     _curPos+2
+	clc
+	adc     #$01
+	sta     _curPos+4
+	lda     _curPos+3
+	sta     _curPos+5
+	lda     _curPos+2
+	sta     _curPos+6
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	sta     _curPos+7
+	lda     #$02
+	jmp     L0A49
+L0A4E:	lda     _rotState
+	cmp     #$02
+	bne     L0A4F
+	lda     _curPos
+	jsr     pusha
+	lda     _curPos+1
+	jsr     pusha
+	lda     #$01
+	jsr     _cclearxy
+	lda     _curPos+2
+	sta     _curPos
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	sta     _curPos+1
+	lda     _curPos+2
+	sta     _curPos+4
+	lda     _curPos+3
+	clc
+	adc     #$01
+	sta     _curPos+5
+	lda     _curPos+2
+	clc
+	adc     #$01
+	sta     _curPos+6
+	lda     _curPos+3
+	sta     _curPos+7
+	lda     #$03
+	jmp     L0A49
+L0A4F:	lda     _rotState
+	cmp     #$03
+	jne     L0A5C
+	lda     _curPos
+	jsr     pusha
+	lda     _curPos+1
+	jsr     pusha
+	lda     #$01
+	jsr     _cclearxy
+	lda     _curPos+2
+	sec
+	sbc     #$01
+	sta     _curPos
+	lda     _curPos+3
+	sta     _curPos+1
+	lda     _curPos+2
+	clc
+	adc     #$01
+	sta     _curPos+4
+	lda     _curPos+3
+	sta     _curPos+5
+	lda     _curPos+2
+	jmp     L0A63
+L0A50:	lda     _curTet
+	cmp     #$03
+	jne     L0A52
+	lda     _rotState
+	bne     L0A51
+	lda     _curPos
+	jsr     pusha
+	lda     _curPos+1
+	jsr     pusha
+	lda     #$01
+	jsr     _cclearxy
+	lda     _curPos+2
+	jsr     pusha
+	lda     _curPos+3
+	jsr     pusha
+	lda     #$01
+	jsr     _cclearxy
+	lda     _curPos+4
+	sta     _curPos
+	lda     _curPos+5
+	sec
+	sbc     #$01
+	sta     _curPos+1
+	lda     _curPos+4
+	sta     _curPos+2
+	lda     _curPos+5
+	sta     _curPos+3
+	lda     _curPos+4
+	clc
+	adc     #$01
+	sta     _curPos+6
+	lda     _curPos+5
+	clc
+	adc     #$01
+	sta     _curPos+7
+	lda     _curPos+2
+	clc
+	adc     #$01
+	sta     _curPos+4
+	lda     _curPos+3
+	sta     _curPos+5
+	lda     #$01
+	jmp     L0A49
+L0A51:	lda     _rotState
+	cmp     #$01
+	jne     L0A5C
+	lda     _curPos
+	jsr     pusha
+	lda     _curPos+1
+	jsr     pusha
+	lda     #$01
+	jsr     _cclearxy
+	lda     _curPos+6
+	jsr     pusha
+	lda     _curPos+7
+	jsr     pusha
+	lda     #$01
+	jsr     _cclearxy
+	lda     _curPos+2
+	sec
+	sbc     #$01
+	sta     _curPos
+	lda     _curPos+3
+	clc
+	adc     #$01
+	sta     _curPos+1
+	lda     _curPos+2
+	sta     _curPos+4
+	lda     _curPos+3
+	sta     _curPos+5
+	lda     _curPos+2
+	clc
+	adc     #$01
+	sta     _curPos+6
+	lda     _curPos+3
+	sta     _curPos+7
+	lda     _curPos+4
+	sta     _curPos+2
+	lda     _curPos+5
+	clc
+	adc     #$01
+	sta     _curPos+3
+	jmp     L0A5E
+L0A52:	lda     _curTet
+	cmp     #$04
+	jne     L0A54
+	lda     _rotState
+	bne     L0A53
+	lda     _curPos
+	jsr     pusha
+	lda     _curPos+1
+	jsr     pusha
+	lda     #$01
+	jsr     _cclearxy
+	lda     _curPos+2
+	jsr     pusha
+	lda     _curPos+3
+	jsr     pusha
+	lda     #$01
+	jsr     _cclearxy
+	lda     _curPos+2
+	clc
+	adc     #$01
+	sta     _curPos
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	sta     _curPos+1
+	lda     _curPos+2
+	sta     _curPos+4
+	lda     _curPos+3
+	sta     _curPos+5
+	lda     _curPos+2
+	sta     _curPos+6
+	lda     _curPos+3
+	clc
+	adc     #$01
+	sta     _curPos+7
+	lda     _curPos+4
+	clc
+	adc     #$01
+	sta     _curPos+2
+	lda     _curPos+5
+	sta     _curPos+3
+	lda     #$01
+	jmp     L0A49
+L0A53:	lda     _rotState
+	cmp     #$01
+	jne     L0A5C
+	lda     _curPos
+	jsr     pusha
+	lda     _curPos+1
+	jsr     pusha
+	lda     #$01
+	jsr     _cclearxy
+	lda     _curPos+2
+	jsr     pusha
+	lda     _curPos+3
+	jsr     pusha
+	lda     #$01
+	jsr     _cclearxy
+	lda     _curPos+4
+	sec
+	sbc     #$01
+	sta     _curPos
+	lda     _curPos+5
+	sta     _curPos+1
+	lda     _curPos+4
+	sta     _curPos+2
+	lda     _curPos+5
+	sta     _curPos+3
+	lda     _curPos+4
+	clc
+	adc     #$01
+	sta     _curPos+6
+	lda     _curPos+5
+	clc
+	adc     #$01
+	sta     _curPos+7
+	lda     _curPos+4
+	sta     _curPos+4
+	lda     _curPos+5
+	clc
+	adc     #$01
+	sta     _curPos+5
+	jmp     L0A5E
+L0A54:	lda     _curTet
+	cmp     #$05
+	jne     L0A58
+	lda     _curPos
+	jsr     pusha
+	lda     _curPos+1
+	jsr     pusha
+	lda     #$01
+	jsr     _cclearxy
+	lda     _curPos+4
+	jsr     pusha
+	lda     _curPos+5
+	jsr     pusha
+	lda     #$01
+	jsr     _cclearxy
+	lda     _curPos+6
+	jsr     pusha
+	lda     _curPos+7
+	jsr     pusha
+	lda     #$01
+	jsr     _cclearxy
+	lda     _rotState
+	bne     L0A55
+	lda     _curPos+2
+	sta     _curPos
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	sta     _curPos+1
+	lda     _curPos+2
+	sta     _curPos+4
+	lda     _curPos+3
+	clc
+	adc     #$01
+	sta     _curPos+5
+	lda     _curPos+2
+	sec
+	sbc     #$01
+	sta     _curPos+6
+	lda     _curPos+3
+	clc
+	adc     #$01
+	sta     _curPos+7
+	lda     #$01
+	jmp     L0A49
+L0A55:	lda     _rotState
+	cmp     #$01
+	bne     L0A56
+	lda     _curPos+2
+	clc
+	adc     #$01
+	sta     _curPos
+	lda     _curPos+3
+	sta     _curPos+1
+	lda     _curPos+2
+	sec
+	sbc     #$01
+	sta     _curPos+4
+	lda     _curPos+3
+	sta     _curPos+5
+	lda     _curPos+2
+	sec
+	sbc     #$01
+	sta     _curPos+6
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	sta     _curPos+7
+	lda     #$02
+	jmp     L0A49
+L0A56:	lda     _rotState
+	cmp     #$02
+	bne     L0A57
+	lda     _curPos+2
+	sta     _curPos
+	lda     _curPos+3
+	clc
+	adc     #$01
+	sta     _curPos+1
+	lda     _curPos+2
+	sta     _curPos+4
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	sta     _curPos+5
+	lda     _curPos+2
+	clc
+	adc     #$01
+	sta     _curPos+6
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	sta     _curPos+7
+	lda     #$03
+	jmp     L0A49
+L0A57:	lda     _rotState
+	cmp     #$03
+	jne     L0A5C
+	lda     _curPos+2
+	sec
+	sbc     #$01
+	sta     _curPos
+	lda     _curPos+3
+	sta     _curPos+1
+	lda     _curPos+2
+	clc
+	adc     #$01
+	sta     _curPos+4
+	lda     _curPos+3
+	sta     _curPos+5
+	lda     _curPos+2
+	clc
+	adc     #$01
+	jmp     L0A63
+L0A58:	lda     _curTet
+	cmp     #$06
+	jne     L0A5C
+	lda     _curPos
+	jsr     pusha
+	lda     _curPos+1
+	jsr     pusha
+	lda     #$01
+	jsr     _cclearxy
+	lda     _curPos+4
+	jsr     pusha
+	lda     _curPos+5
+	jsr     pusha
+	lda     #$01
+	jsr     _cclearxy
+	lda     _curPos+6
+	jsr     pusha
+	lda     _curPos+7
+	jsr     pusha
+	lda     #$01
+	jsr     _cclearxy
+	lda     _rotState
+	bne     L0A59
+	lda     _curPos+2
+	sta     _curPos
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	sta     _curPos+1
+	lda     _curPos+2
+	sta     _curPos+4
+	lda     _curPos+3
+	clc
+	adc     #$01
+	sta     _curPos+5
+	lda     _curPos+2
+	sec
+	sbc     #$01
+	sta     _curPos+6
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	sta     _curPos+7
+	lda     #$01
+	jmp     L0A49
+L0A59:	lda     _rotState
+	cmp     #$01
+	bne     L0A5A
+	lda     _curPos+2
+	clc
+	adc     #$01
+	sta     _curPos
+	lda     _curPos+3
+	sta     _curPos+1
+	lda     _curPos+2
+	sec
+	sbc     #$01
+	sta     _curPos+4
+	lda     _curPos+3
+	sta     _curPos+5
+	lda     _curPos+2
+	clc
+	adc     #$01
+	sta     _curPos+6
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	sta     _curPos+7
+	lda     #$02
+	jmp     L0A49
+L0A5A:	lda     _rotState
+	cmp     #$02
+	bne     L0A5B
+	lda     _curPos+2
+	sta     _curPos
+	lda     _curPos+3
+	clc
+	adc     #$01
+	sta     _curPos+1
+	lda     _curPos+2
+	sta     _curPos+4
+	lda     _curPos+3
+	sec
+	sbc     #$01
+	sta     _curPos+5
+	lda     _curPos+2
+	clc
+	adc     #$01
+	sta     _curPos+6
+	lda     _curPos+3
+	clc
+	adc     #$01
+	sta     _curPos+7
+	lda     #$03
+	jmp     L0A49
+L0A5B:	lda     _rotState
+	cmp     #$03
+	bne     L0A5C
+	lda     _curPos+2
+	sec
+	sbc     #$01
+	sta     _curPos
+	lda     _curPos+3
+	sta     _curPos+1
+	lda     _curPos+2
+	clc
+	adc     #$01
+	sta     _curPos+4
+	lda     _curPos+3
+	sta     _curPos+5
+	lda     _curPos+2
+	sec
+	sbc     #$01
+L0A63:	sta     _curPos+6
+	lda     _curPos+3
+	clc
+	adc     #$01
+L0A5F:	sta     _curPos+7
+L0A5E:	lda     #$00
+L0A49:	sta     _rotState
+L0A5C:	lda     #$00
+	sta     _i
+	lda     _curColor
+	jsr     _textcolor
+	jmp     L0944
+L0A5D:	lda     _i
+	asl     a
+	bcc     L0A47
+	ldx     #$01
+L0A47:	sta     ptr1
+	txa
+	clc
+	adc     #>(_curPos)
+	sta     ptr1+1
+	ldy     #<(_curPos)
+	lda     (ptr1),y
+	jsr     pusha
+	ldx     #$00
+	lda     _i
+	asl     a
+	bcc     L0A4A
+	inx
+	clc
+L0A4A:	adc     #<(_curPos)
+	sta     ptr1
+	txa
+	adc     #>(_curPos)
+	sta     ptr1+1
+	ldy     #$01
+	lda     (ptr1),y
+	jsr     pusha
+	lda     _blockTile
+	jsr     _cputcxy
+	inc     _i
+L0944:	ldx     #$00
+	lda     _i
+	cmp     #$04
+	bcc     L0A5D
+	rts
 
 .endproc
 
@@ -1308,45 +2880,41 @@ L037D:	lda     _i
 
 	jsr     _kbhit
 	cmp     #$01
-	bne     L02DF
+	bne     L096A
 	jsr     _cgetc
 	sta     _dirKey
 	cmp     #$41
-	bne     L037E
+	bne     L0A64
 	jsr     _checkLeftCollision
 	cmp     #$00
-	bne     L037E
+	bne     L0A64
 	lda     #$01
 	jsr     _moveTet
-L037E:	lda     _dirKey
+L0A64:	lda     _dirKey
 	cmp     #$44
-	bne     L037F
+	bne     L0A65
 	jsr     _checkRightCollision
 	cmp     #$00
-	bne     L037F
+	bne     L0A65
 	lda     #$02
 	jsr     _moveTet
-L037F:	lda     _dirKey
+L0A65:	lda     _dirKey
 	cmp     #$53
-	bne     L02DF
+	bne     L0A67
 	jsr     _checkBotCollision
 	cmp     #$00
-	jeq     _moveTet
-L02DF:	rts
-
-.endproc
-
-; ---------------------------------------------------------------
-; void __near__ checkRot (void)
-; ---------------------------------------------------------------
-
-.segment	"CODE"
-
-.proc	_checkRot: near
-
-.segment	"CODE"
-
-	jmp     _kbhit
+	bne     L0A67
+	lda     _isPlaced
+	bne     L0A67
+	jsr     _moveTet
+L0A67:	lda     _dirKey
+	cmp     #$57
+	bne     L096A
+	lda     #$00
+	jsr     _checkRotateCollision
+	cmp     #$00
+	jeq     _rotClockwise
+L096A:	rts
 
 .endproc
 
@@ -1362,25 +2930,24 @@ L02DF:	rts
 
 	jsr     _pickTet
 	jsr     _drawTet
-	jmp     L02EB
-L0380:	lda     _isPlaced
+	jmp     L0973
+L0A68:	lda     _isPlaced
 	cmp     #$01
-	bne     L02ED
+	bne     L0975
 	jsr     _pickTet
 	jsr     _drawTet
 	lda     #$00
 	sta     _isPlaced
-L02ED:	jsr     _checkMove
-	jsr     _checkRot
+L0975:	jsr     _checkMove
 	jsr     _handleTet
 	lda     #0
 	sta     162
 wait:	lda     162
 	cmp     #$1E
 	bne     wait
-L02EB:	lda     _isGameOver
+L0973:	lda     _isGameOver
 	cmp     #$01
-	bne     L0380
+	bne     L0A68
 	rts
 
 .endproc
@@ -1404,9 +2971,9 @@ L02EB:	lda     _isGameOver
 	ldx     #>(_ydim)
 	jsr     _screensize
 	jsr     _draw_title
-L0308:	jsr     _cgetc
+L098F:	jsr     _cgetc
 	cmp     #$58
-	bne     L0308
+	bne     L098F
 	jsr     _draw_game
 	jsr     _game_loop
 	ldx     #$00

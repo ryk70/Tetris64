@@ -15,6 +15,10 @@
 #  define outb(addr,val)        (*(addr) = (val))
 #  define inb(addr)             (*(addr))
 
+typedef unsigned char BYTE;
+// #define DOWN 0
+// #define LEFT 1
+// #define RIGHT 2
 /*
         (6,2)          (16, 2)
         +-------------+
@@ -59,8 +63,8 @@
 // Vars
 // Apparently grouping together non-initialized vars
 // creates faster code, although that may just be for local variables
-static unsigned char xdim, ydim, isGameOver, curTet;
-static unsigned char curPos[4][2];
+static BYTE xdim, ydim, isGameOver, curTet;
+static BYTE curPos[4][2];
 static unsigned int linesCleared;
 
 // The x and y coordinates of the tetronimos are 
@@ -75,19 +79,20 @@ static unsigned int linesCleared;
 //      #ZZ
 //      #Z#
 //      ^is counted as the coordinate
-static unsigned char xTet;
-static unsigned char yTet;
-static unsigned char curColor;
-static unsigned char initPlacement;
-static unsigned char rotState;
+static BYTE xTet;
+static BYTE yTet;
+static BYTE curColor;
+static BYTE initPlacement;
+static BYTE rotState;
+static BYTE dirKey;
 
 // Data
-static unsigned char i = 0;
-static unsigned char j = 0;
+static BYTE i = 0;
+static BYTE j = 0;
 
 
-static unsigned char isPlaced = 0;
-static unsigned char blockTile = 169;
+static BYTE isPlaced = 0;
+static BYTE blockTile = 169;
 static const char Title[] = "TETRIS64";
 static const char Inst[] = "PRESS X TO PLAY";
 
@@ -155,6 +160,14 @@ static void draw_game(void) {
 
 }
 
+static BYTE checkIfEmpty (BYTE x, BYTE y) {
+        gotoxy(x, y);
+        if (cpeekc() != 32) {
+                isGameOver = 1;
+                return 1;
+        }
+        return 0;
+}
 
 // TODO: Optimize the array assignments
 static void drawTet() {
@@ -165,21 +178,17 @@ static void drawTet() {
         // Spawns in middle column
         // Cyan, COLOR_LIGHTBLUE
         if (curTet == 0) {
-                textcolor(COLOR_LIGHTBLUE);
                 curColor = COLOR_LIGHTBLUE;
-                cputcxy(9, 3, blockTile);
+
                 curPos[0][0] = 9;
                 curPos[0][1] = 3; 
 
-                cputcxy(10, 3, blockTile);
                 curPos[1][0] = 10;
                 curPos[1][1] = 3;
 
-                cputcxy(11, 3, blockTile);
                 curPos[2][0] = 11;
                 curPos[2][1] = 3;
 
-                cputcxy(12, 3, blockTile);
                 curPos[3][0] = 12;
                 curPos[3][1] = 3;
 
@@ -192,21 +201,17 @@ static void drawTet() {
         // Yellow, COLOR_YELLOW
 
         if (curTet == 1) {
-                textcolor(COLOR_YELLOW);
                 curColor = COLOR_YELLOW;
-                cputcxy(10, 3, blockTile);
+
                 curPos[0][0] = 10;
                 curPos[0][1] = 3;
 
-                cputcxy(11, 3, blockTile);
                 curPos[1][0] = 11;
                 curPos[1][1] = 3;
 
-                cputcxy(10, 4, blockTile);
                 curPos[2][0] = 10;
                 curPos[2][1] = 4;
 
-                cputcxy(11, 4, blockTile);
                 curPos[3][0] = 11;
                 curPos[3][1] = 4;
 
@@ -217,21 +222,17 @@ static void drawTet() {
         // Tetronomio 2: T piece
         // Purple, COLOR_PURPLE
         if (curTet == 2) {
-                textcolor(COLOR_PURPLE);
                 curColor = COLOR_PURPLE;
-                cputcxy(initPlacement, 3, blockTile);
+
                 curPos[0][0] = initPlacement;
                 curPos[0][1] = 3;
 
-                cputcxy(initPlacement + 1, 3, blockTile);
                 curPos[1][0] = initPlacement + 1;
                 curPos[1][1] = 3;
 
-                cputcxy(initPlacement + 2, 3, blockTile);
                 curPos[2][0] = initPlacement + 2;
                 curPos[2][1] = 3;
 
-                cputcxy(initPlacement + 1, 4, blockTile);
                 curPos[3][0] = initPlacement + 1;
                 curPos[3][1] = 4;
 
@@ -242,21 +243,17 @@ static void drawTet() {
         // Tetronomio 3: S piece
         // Green, COLOR_GREEN
         if (curTet == 3) {
-                textcolor(COLOR_GREEN);
                 curColor = COLOR_GREEN;
-                cputcxy(initPlacement, 4, blockTile);
+
                 curPos[0][0] = initPlacement;
                 curPos[0][1] = 4;
 
-                cputcxy(initPlacement + 1, 4, blockTile);
                 curPos[1][0] = initPlacement + 1;
                 curPos[1][1] = 4;
 
-                cputcxy(initPlacement + 1, 3, blockTile);
                 curPos[2][0] = initPlacement + 1;
                 curPos[2][1] = 3;
 
-                cputcxy(initPlacement + 2, 3, blockTile);
                 curPos[3][0] = initPlacement + 2;
                 curPos[3][1] = 3;
 
@@ -268,21 +265,17 @@ static void drawTet() {
         // Tetronomio 4: Z piece
         // Red, COLOR_RED
         if (curTet == 4) {
-                textcolor(COLOR_RED);
                 curColor = COLOR_RED;
-                cputcxy(initPlacement, 3, blockTile);
+
                 curPos[0][0] = initPlacement;
                 curPos[0][1] = 3;
 
-                cputcxy(initPlacement + 1, 3, blockTile);
                 curPos[1][0] = initPlacement + 1;
                 curPos[1][1] = 3;
 
-                cputcxy(initPlacement + 1, 4, blockTile);
                 curPos[2][0] = initPlacement + 1;
                 curPos[2][1] = 4;
 
-                cputcxy(initPlacement + 2, 4, blockTile);
                 curPos[3][0] = initPlacement + 2;
                 curPos[3][1] = 4;
 
@@ -293,21 +286,17 @@ static void drawTet() {
         // Tetronomio 5: J piece
         // Orange, COLOR_ORANGE
         if (curTet == 5) {
-                textcolor(COLOR_ORANGE);
                 curColor = COLOR_ORANGE;
-                cputcxy(initPlacement, 3, blockTile);
+
                 curPos[0][0] = initPlacement;
                 curPos[0][1] = 3;
 
-                cputcxy(initPlacement, 4, blockTile);
                 curPos[1][0] = initPlacement;
                 curPos[1][1] = 4;
 
-                cputcxy(initPlacement + 1, 4, blockTile);
                 curPos[2][0] = initPlacement + 1;
                 curPos[2][1] = 4;
 
-                cputcxy(initPlacement + 2, 4, blockTile);
                 curPos[3][0] = initPlacement + 2;
                 curPos[3][1] = 4;
 
@@ -318,21 +307,17 @@ static void drawTet() {
         // Tetronomio 6: L piece
         // Blue, COLOR_BLUE
         if (curTet == 6) {
-                textcolor(COLOR_BLUE);
                 curColor = COLOR_BLUE;
-                cputcxy(initPlacement, 3, blockTile);
+
                 curPos[0][0] = initPlacement;
                 curPos[0][1] = 3;
 
-                cputcxy(initPlacement, 4, blockTile);
                 curPos[1][0] = initPlacement;
                 curPos[1][1] = 4;
 
-                cputcxy(initPlacement + 1, 4, blockTile);
                 curPos[2][0] = initPlacement + 1;
                 curPos[2][1] = 4;
 
-                cputcxy(initPlacement + 2, 4, blockTile);
                 curPos[3][0] = initPlacement + 2;
                 curPos[3][1] = 4;
 
@@ -341,6 +326,21 @@ static void drawTet() {
         }
 
         rotState = 0;
+
+        i = 0;
+        while (i < 4) {
+                if (checkIfEmpty(curPos[i][0], curPos[i][1]) == 1) {
+                        return;
+                }
+                ++i;
+        }
+
+        i = 0;
+        textcolor(curColor);
+        while (i < 4) {
+                cputcxy(curPos[i][0], curPos[i][1], blockTile);
+                ++i;
+        }
 }
 
 static void pickTet() {
@@ -349,8 +349,8 @@ static void pickTet() {
         initPlacement = (rand() % 7) + 6;
 }
 
-static unsigned char checkCollision() {
-        unsigned char botY = 0;
+static BYTE checkBotCollision() {
+        BYTE botY = 0;
 
         i = 0;
         while (i < 4) {
@@ -376,12 +376,9 @@ static unsigned char checkCollision() {
         return 0;
 }
 
-static void handleTet() {
-        if (checkCollision() == 1) {
-                isPlaced = 1;
-        } else {
-                
-                i = 0;
+static void moveTet(BYTE dir) {
+        if (dir == 0) { // Move down, positive Y
+               i = 0;
                 while (i < 4) {
                         textcolor(COLOR_BLACK);
                         cclearxy(curPos[i][0], curPos[i][1], 1);
@@ -390,7 +387,7 @@ static void handleTet() {
 
                 i = 0;
                 while (i < 4) {
-                        unsigned char temp = curPos[i][1];
+                        BYTE temp = curPos[i][1];
                         curPos[i][1] = temp + 1;
                         ++i;
                 }
@@ -400,33 +397,179 @@ static void handleTet() {
                 while (i < 4) {
                         cputcxy(curPos[i][0], curPos[i][1], 169);
                         ++i;
+                } 
+        }
+
+        if (dir == 1) { // Move left, negative X
+               i = 0;
+                while (i < 4) {
+                        textcolor(COLOR_BLACK);
+                        cclearxy(curPos[i][0], curPos[i][1], 1);
+                        ++i;
                 }
+
+                i = 0;
+                while (i < 4) {
+                        BYTE temp = curPos[i][0];
+                        curPos[i][0] = temp - 1;
+                        ++i;
+                }
+
+                i = 0;
+                textcolor(curColor);
+                while (i < 4) {
+                        cputcxy(curPos[i][0], curPos[i][1], 169);
+                        ++i;
+                } 
+        }
+
+        if (dir == 2) { // Move right, positive X
+               i = 0;
+                while (i < 4) {
+                        textcolor(COLOR_BLACK);
+                        cclearxy(curPos[i][0], curPos[i][1], 1);
+                        ++i;
+                }
+
+                i = 0;
+                while (i < 4) {
+                        BYTE temp = curPos[i][0];
+                        curPos[i][0] = temp + 1;
+                        ++i;
+                }
+
+                i = 0;
+                textcolor(curColor);
+                while (i < 4) {
+                        cputcxy(curPos[i][0], curPos[i][1], 169);
+                        ++i;
+                } 
+        }
+} 
+
+static void handleTet() {
+        if (checkBotCollision() == 1) {
+                isPlaced = 1;
+        } else {
+                moveTet(0);
+        }
+}
+
+
+static BYTE checkLeftCollision() {
+        BYTE leftX = 255;
+        i = 0;
+
+        while (i < 4) {
+                if (curPos[i][0] < leftX) {
+                        leftX = curPos[i][0];
+                }
+                ++i;
+        }
+
+        i = 0;
+        while (i < 4) {
+                if (curPos[i][0] > leftX) {
+                        ++i;
+                        continue;
+                }
+                gotoxy(curPos[i][0] - 1, curPos[i][1]);
+                if (cpeekc() != 32) {
+                        return 1;
+                }
+                ++i;
+        }
+        return 0;
+}
+
+static BYTE checkRightCollision() {
+        BYTE rightX = 0;
+        i = 0;
+
+        while (i < 4) {
+                if (curPos[i][0] > rightX) {
+                        rightX = curPos[i][0];
+                }
+                ++i;
+        }
+
+        i = 0;
+        while (i < 4) {
+                if (curPos[i][0] < rightX) {
+                        ++i;
+                        continue;
+                }
+                gotoxy(curPos[i][0] + 1, curPos[i][1]);
+                if (cpeekc() != 32) {
+                        return 1;
+                }
+                ++i;
+        }
+        return 0;
+}
+
+static void checkMove() {
+        if (kbhit() != 1) { 
+                return;
+        } 
+        
+        dirKey = cgetc();
+        
+
+        if (dirKey == 'a') {
+                if (checkLeftCollision() == 0) {
+                        moveTet(1); // move left
+                }
+        }
+
+        if (dirKey == 'd') {
+                if (checkRightCollision() == 0) {
+                        moveTet(2); // move right
+                }
+        }
+
+        if (dirKey == 's') {
+                if (checkBotCollision() == 0) {
+                        moveTet(0);
+                }
+        }
+}
+
+static void checkRot() {
+        if (!kbhit()) {
+                return;
         }
 }
 
 static void game_loop() {
         pickTet();
         drawTet();
-
-        
-
+        //#define CLK 162
 
         while (isGameOver != 1) {
-
+                
                 if (isPlaced == 1) {
                         pickTet();
                         drawTet();
                         isPlaced = 0;
                 }
 
+                checkMove();
+                checkRot();
                 handleTet();
 
+
+                // I could not think of a different way to 
+                // do pauses. 
+                // TIMEDELAY / 60 = the delay in seconds. 
+                
+                
+                #define TIMEDELAY 30
                 asm("lda #0");
                 asm("sta 162");
                 asm("wait: lda 162");
-                asm("cmp #30");
+                asm("cmp #%b", TIMEDELAY);
                 asm("bne wait");
-                
         } 
 }
 
